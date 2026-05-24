@@ -3,45 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SeedGuard | PMO Freedom Tracker</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>SeedGuard | PMO Freedom</title>
   <style>
-    body { font-family: system-ui, sans-serif; background: #0a0a0a; color: #e5e5e5; margin: 0; }
-    .neon-cyan { text-shadow: 0 0 10px #22d3ee, 0 0 20px #22d3ee; }
-    .neon-pink { text-shadow: 0 0 10px #f472b6, 0 0 20px #f472b6; }
-    .card { background: rgba(30,30,40,0.8); border: 1px solid #4f46e5; border-radius: 16px; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: linear-gradient(rgba(10,10,25,0.9), rgba(10,10,25,0.9)), url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=2070') center/cover fixed;
+      color: white;
+      margin: 0;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    .neon { text-shadow: 0 0 20px #22d3ee; }
   </style>
 </head>
-<body class="min-h-screen bg-zinc-950 text-zinc-50 flex flex-col items-center p-6">
-  <div class="max-w-2xl w-full text-center">
-    <h1 class="text-6xl font-bold neon-cyan mt-12">SEEDGUARD</h1>
-    <p class="text-2xl text-cyan-400 mt-2">Reclaim Your Power • Build Your Legacy</p>
+<body class="flex items-center justify-center">
+  <div class="max-w-xl text-center">
+    <h1 class="text-7xl font-bold neon mb-4">SEEDGUARD</h1>
+    <p class="text-2xl mb-8">Reclaim Your Power</p>
     
-    <div class="mt-8 bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 px-6 py-3 rounded-xl text-sm">
-      ⚠️ <strong>STILL IN BETA</strong> — More features coming soon
-    </div>
-
-    <a href="/dashboard" 
-       class="mt-10 inline-block bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-bold text-xl px-12 py-6 rounded-2xl hover:scale-105 transition-all">
+    <a href="/dashboard.html" class="inline-block bg-gradient-to-r from-pink-500 to-cyan-500 text-white font-bold text-2xl px-16 py-6 rounded-3xl hover:scale-105 transition">
       OPEN DASHBOARD
     </a>
 
-    <div class="mt-16 text-left card p-8">
-      <h2 class="text-2xl font-bold mb-6 neon-pink">Latest Updates</h2>
-      <ul class="space-y-3 text-zinc-300">
-        <li>✅ Detailed <strong>Streak Milestones & Benefits</strong> added</li>
-        <li>✅ Achievement system with visual rewards</li>
-        <li>✅ Core Philosophy & Journey Guide</li>
-        <li>🔄 Social features (Accounts, Friends, Leaderboard) — Coming Soon</li>
+    <div class="mt-12 text-left bg-black/60 p-8 rounded-3xl">
+      <h2 class="text-xl mb-4">Latest Updates</h2>
+      <ul class="space-y-2 text-left">
+        <li>✅ Milestone Benefits System</li>
+        <li>✅ Achievements & Progress</li>
+        <li>✅ Local Streak Saving</li>
+        <li>🚧 Social Features Coming Soon</li>
       </ul>
-    </div>
-
-    <div class="mt-12 card p-8 text-left">
-      <h3 class="text-xl font-bold mb-4">Core Philosophy</h3>
-      <p class="text-zinc-400 leading-relaxed">
-        Retention is about <strong>rebuilding your identity</strong> — not just resisting urges. 
-        Replace old habits with powerful rituals: exercise, cold showers, meditation, journaling, 
-        sunlight, and healthy eating. Discipline becomes who you are.
-      </p>
     </div>
   </div>
 </body>
