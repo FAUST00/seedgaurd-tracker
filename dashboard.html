@@ -3,115 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>SeedGuard | Dashboard</title>
   <style>
-    body { font-family: system-ui, sans-serif; background: #0a0a0a; color: #e5e5e5; margin: 0; }
-    .neon-cyan { color: #22d3ee; text-shadow: 0 0 10px #22d3ee; }
-    .neon-pink { color: #f472b6; text-shadow: 0 0 10px #f472b6; }
-    .card { background: rgba(20,20,30,0.95); border: 1px solid #6366f1; border-radius: 16px; padding: 20px; }
-    .milestone { transition: all 0.3s; }
-    .milestone.unlocked { border-color: #22c55e; background: rgba(34,197,94,0.1); }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(rgba(10,10,20,0.95), rgba(10,10,20,0.95)), 
+                  url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=2070') center/cover no-repeat fixed;
+      color: #e5e5e5;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .neon-cyan { color: #22d3ee; text-shadow: 0 0 10px #22d3ee, 0 0 20px #22d3ee; }
+    .neon-pink { color: #f472b6; text-shadow: 0 0 10px #f472b6, 0 0 20px #f472b6; }
+    .card {
+      background: rgba(20, 20, 35, 0.92);
+      border: 1px solid rgba(99, 102, 241, 0.5);
+      border-radius: 20px;
+      backdrop-filter: blur(12px);
+    }
+    .milestone {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .milestone.unlocked {
+      border-color: #22c55e;
+      box-shadow: 0 0 25px rgba(74, 222, 128, 0.3);
+      background: rgba(34, 197, 94, 0.08);
+    }
+    .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; }
   </style>
 </head>
-<body class="min-h-screen bg-zinc-950 flex">
+<body class="flex">
 
   <!-- Sidebar -->
-  <aside class="w-64 border-r border-zinc-800 p-6 hidden md:block">
+  <aside class="w-64 border-r border-zinc-800 p-6 hidden md:block bg-black/70">
     <div class="flex items-center gap-3 mb-10">
-      <span class="text-3xl">🛡️</span>
-      <h1 class="text-2xl font-bold neon-pink">SeedGuard</h1>
+      <span class="text-4xl">🛡️</span>
+      <h1 class="text-3xl font-bold neon-pink tracking-widest">SEEDGUARD</h1>
     </div>
     <nav class="space-y-2">
-      <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 bg-zinc-900 rounded-xl text-white">📊 Dashboard</a>
-      <a href="/history" class="flex items-center gap-3 px-4 py-3 hover:bg-zinc-900 rounded-xl text-zinc-400">📖 History</a>
+      <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 bg-zinc-900 rounded-2xl text-white font-medium">📊 Dashboard</a>
+      <a href="/history" class="flex items-center gap-3 px-4 py-3 hover:bg-zinc-900 rounded-2xl text-zinc-400">📖 History</a>
     </nav>
   </aside>
 
-  <main class="flex-1 p-6 md:p-10">
+  <main class="flex-1 p-6 md:p-10 overflow-auto">
     <div class="max-w-5xl mx-auto">
-      <div class="flex justify-between items-center mb-10">
-        <h1 class="text-4xl font-bold neon-cyan">DASHBOARD</h1>
-        <div class="text-sm text-zinc-500">Austo™ • Beta v0.2</div>
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-5xl font-bold neon-cyan tracking-tight">DASHBOARD</h1>
+        <div class="text-sm text-zinc-400">Austo™ • Beta v0.3</div>
       </div>
 
       <!-- Current Streak -->
-      <div class="card mb-8">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-xl font-semibold flex items-center gap-2">⏳ CURRENT STREAK</h2>
-          <button onclick="resetStreak()" class="text-red-400 hover:text-red-500 text-sm">I'm Relapsing</button>
+      <div class="card p-8 mb-8">
+        <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">⏳ CURRENT STREAK</h2>
+        <div class="flex justify-center gap-8 text-center" id="streak-display">
+          <div>
+            <div id="days" class="text-7xl font-bold neon-pink">12</div>
+            <div class="text-xs tracking-widest text-zinc-500 mt-1">DAYS</div>
+          </div>
+          <div class="text-5xl text-zinc-700 pt-4">:</div>
+          <div>
+            <div id="hours" class="text-5xl font-bold neon-cyan">00</div>
+            <div class="text-xs tracking-widest text-zinc-500 mt-1">HRS</div>
+          </div>
+          <div>
+            <div id="mins" class="text-5xl font-bold neon-cyan">00</div>
+            <div class="text-xs tracking-widest text-zinc-500 mt-1">MIN</div>
+          </div>
+          <div>
+            <div id="secs" class="text-5xl font-bold neon-cyan">00</div>
+            <div class="text-xs tracking-widest text-zinc-500 mt-1">SEC</div>
+          </div>
         </div>
-        
-        <div class="flex justify-center gap-6 text-center text-6xl font-mono font-bold" id="streak-display">
-          <div><span id="days" class="neon-pink">0</span><div class="text-xs text-zinc-500 mt-1">DAYS</div></div>
-          <div class="text-4xl text-zinc-700">:</div>
-          <div><span id="hours" class="neon-cyan">00</span><div class="text-xs text-zinc-500 mt-1">HRS</div></div>
-          <div><span id="mins" class="neon-cyan">02</span><div class="text-xs text-zinc-500 mt-1">MIN</div></div>
-          <div><span id="secs" class="neon-cyan">56</span><div class="text-xs text-zinc-500 mt-1">SEC</div></div>
-        </div>
+        <button onclick="resetStreak()" class="mt-6 w-full py-3 bg-red-600/80 hover:bg-red-600 rounded-xl text-sm font-medium">I'M RELAPSING</button>
       </div>
 
       <!-- Milestones -->
-      <div class="card">
-        <h2 class="text-2xl font-bold mb-8 neon-cyan flex items-center gap-3">🌟 YOUR JOURNEY MILESTONES</h2>
-        
-        <div class="grid md:grid-cols-2 gap-6" id="milestones">
-          <!-- Populated by JavaScript -->
-        </div>
+      <div class="card p-8">
+        <h2 class="text-3xl font-bold mb-8 neon-cyan flex items-center gap-3">🌟 JOURNEY MILESTONES</h2>
+        <div class="grid md:grid-cols-2 gap-6" id="milestones-container"></div>
       </div>
 
-      <div class="mt-8 text-center text-zinc-500 text-sm">
-        Track your streak. Build your identity. Become unstoppable.
+      <div class="mt-12 text-center text-zinc-500 text-sm">
+        Replace old habits with rituals. Build your identity. Become unstoppable.
       </div>
     </div>
   </main>
 
+  <canvas id="confetti" class="confetti"></canvas>
+
   <script>
-    // Milestone Data
     const milestones = [
-      {days: 7, title: "The Awakening", phase: "Breaking old habits", benefits: "Increased awareness, motivation, better focus"},
-      {days: 21, title: "Dopamine Reset", phase: "Mental recalibration", benefits: "Clearer thinking, reduced cravings"},
-      {days: 42, title: "First Transformation", phase: "Energy redirection", benefits: "Natural confidence & productivity"},
-      {days: 56, title: "Social Shift", phase: "Purposeful energy", benefits: "Stronger presence and respect"},
-      {days: 70, title: "Warrior Mode", phase: "Discipline becomes natural", benefits: "Flow state & powerful focus"},
-      {days: 90, title: "Identity Integration", phase: "Lifestyle change", benefits: "Deep clarity & unbreakable discipline"}
+      {days: 7, title: "The Awakening", benefits: "Increased awareness, motivation surge, better sleep", phase: "Breaking old habits"},
+      {days: 21, title: "Dopamine Reset", benefits: "Clearer thinking, reduced cravings", phase: "Mental recalibration"},
+      {days: 42, title: "First Transformation", benefits: "Natural confidence, productivity boost", phase: "Energy redirection"},
+      {days: 56, title: "Social Shift", benefits: "Stronger presence, respect from others", phase: "Purposeful energy"},
+      {days: 70, title: "Warrior Mode", benefits: "Flow state, powerful focus", phase: "Discipline becomes natural"},
+      {days: 90, title: "Identity Integration", benefits: "Deep clarity, unbreakable discipline", phase: "Lifestyle change"}
     ];
 
-    let currentStreak = 12; // Change this number to test different milestones
+    let currentStreak = 42; // Change this to test (localStorage will remember)
+
+    function loadStreak() {
+      const saved = localStorage.getItem('seedguardStreak');
+      if (saved) currentStreak = parseInt(saved);
+      document.getElementById('days').textContent = currentStreak;
+    }
+
+    function saveStreak() {
+      localStorage.setItem('seedguardStreak', currentStreak);
+    }
 
     function renderMilestones() {
-      const container = document.getElementById('milestones');
+      const container = document.getElementById('milestones-container');
       container.innerHTML = milestones.map(m => `
         <div class="milestone card p-6 ${currentStreak >= m.days ? 'unlocked' : ''}">
-          <div class="flex justify-between">
+          <div class="flex justify-between items-start">
             <div>
-              <div class="text-4xl font-bold ${currentStreak >= m.days ? 'text-green-400' : 'text-zinc-400'}">${m.days}</div>
-              <div class="text-lg font-semibold">${m.title}</div>
+              <div class="text-5xl font-bold ${currentStreak >= m.days ? 'text-green-400' : 'text-zinc-400'}">${m.days}</div>
+              <div class="text-xl font-semibold mt-1">${m.title}</div>
             </div>
-            ${currentStreak >= m.days ? '<span class="text-4xl">🏆</span>' : ''}
+            ${currentStreak >= m.days ? '🏆' : ''}
           </div>
-          <p class="mt-4 text-sm text-zinc-400">${m.benefits}</p>
+          <p class="mt-4 text-sm text-zinc-300">${m.benefits}</p>
           <p class="text-xs text-cyan-400 mt-3">${m.phase}</p>
         </div>
       `).join('');
     }
 
-    // Simple streak timer simulation
-    function updateStreakTimer() {
-      // You can expand this later with localStorage
-      document.getElementById('days').textContent = currentStreak;
+    function celebrate() {
+      const canvas = document.getElementById('confetti');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      // Simple confetti animation (you can expand this)
+      for (let i = 0; i < 150; i++) {
+        setTimeout(() => {
+          ctx.fillStyle = `hsl(${Math.random()*360}, 100%, 70%)`;
+          ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 8, 8);
+        }, i * 8);
+      }
+      setTimeout(() => canvas.style.display = 'none', 4000);
     }
 
     function resetStreak() {
-      if(confirm("Mark as relapse? This will reset your streak.")) {
+      if (confirm("Reset streak? This marks a relapse.")) {
         currentStreak = 0;
-        updateStreakTimer();
+        saveStreak();
         renderMilestones();
+        document.getElementById('days').textContent = '0';
       }
     }
 
-    // Initialize
+    // Init
+    loadStreak();
     renderMilestones();
-    updateStreakTimer();
+    
+    // Auto-increment for demo (remove in production)
+    setInterval(() => {
+      // currentStreak++; saveStreak(); renderMilestones(); // Uncomment if you want live increase
+    }, 10000);
   </script>
 </body>
 </html>
