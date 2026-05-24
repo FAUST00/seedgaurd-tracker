@@ -3,74 +3,72 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <title>SeedGuard | Dashboard</title>
+  <title>SeedGuard • Dashboard</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
     
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: linear-gradient(rgba(10,10,25,0.92), rgba(10,10,25,0.92)), 
+      background: linear-gradient(rgba(10,10,30,0.95), rgba(10,10,30,0.95)), 
                   url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=2070') center/cover fixed;
       color: #e5e5e5;
-      margin: 0;
       min-height: 100vh;
+      overflow-x: hidden;
     }
-    .neon-cyan { color: #22d3ee; text-shadow: 0 0 15px #22d3ee, 0 0 30px #22d3ee; }
-    .neon-pink { color: #f472b6; text-shadow: 0 0 15px #f472b6, 0 0 30px #f472b6; }
+    .neon-cyan { color: #67e8f9; text-shadow: 0 0 15px #67e8f9, 0 0 30px #22d3ee; }
+    .neon-pink { color: #f472b6; text-shadow: 0 0 15px #f472b6, 0 0 30px #db2777; }
+    
     .card {
-      background: rgba(20, 20, 35, 0.95);
-      border: 1px solid rgba(99, 102, 241, 0.6);
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(103, 232, 249, 0.3);
       border-radius: 20px;
       backdrop-filter: blur(16px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    .milestone { transition: all 0.4s; }
-    .milestone.unlocked { 
-      border-color: #22c55e; 
-      box-shadow: 0 0 25px rgba(74, 222, 128, 0.4);
-      background: rgba(34, 197, 94, 0.1);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     }
   </style>
 </head>
 <body class="flex">
 
   <!-- Sidebar -->
-  <aside class="w-64 border-r border-zinc-800 p-6 hidden md:block bg-black/80">
-    <div class="flex items-center gap-3 mb-10">
-      <span class="text-4xl">🛡️</span>
-      <h1 class="text-3xl font-bold neon-pink">SEEDGUARD</h1>
+  <aside class="w-72 border-r border-cyan-900/50 p-8 hidden lg:block bg-black/70">
+    <div class="flex items-center gap-4 mb-12">
+      <span class="text-5xl">🛡️</span>
+      <h1 class="text-4xl font-bold neon-pink tracking-widest">SEEDGUARD</h1>
     </div>
     <nav class="space-y-2">
-      <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 bg-zinc-900 rounded-2xl text-white">📊 Dashboard</a>
-      <a href="/history.html" class="flex items-center gap-3 px-4 py-3 hover:bg-zinc-900 rounded-2xl text-zinc-400">📖 History</a>
+      <a href="dashboard.html" class="flex items-center gap-4 px-6 py-4 bg-cyan-950/50 text-white rounded-2xl font-medium">📊 Dashboard</a>
+      <a href="history.html" class="flex items-center gap-4 px-6 py-4 hover:bg-zinc-900 rounded-2xl text-zinc-400">📖 History</a>
     </nav>
   </aside>
 
-  <main class="flex-1 p-6 md:p-10">
-    <div class="max-w-5xl mx-auto">
-      <div class="flex justify-between items-center mb-8">
-        <h1 class="text-5xl font-bold neon-cyan">DASHBOARD</h1>
-        <div class="text-sm text-zinc-400">Austo™ • Beta v0.3</div>
+  <main class="flex-1 p-6 lg:p-12">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex justify-between items-end mb-12">
+        <div>
+          <h1 class="text-6xl font-bold neon-cyan">DASHBOARD</h1>
+          <p class="text-cyan-400 mt-2">Austo™ • Beta v0.4</p>
+        </div>
       </div>
 
-      <!-- Current Streak -->
-      <div class="card p-8 mb-8">
-        <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">⏳ CURRENT STREAK</h2>
-        <div class="flex justify-center gap-8 text-center" id="streak-display">
-          <div><div id="days" class="text-7xl font-bold neon-pink">42</div><div class="text-xs text-zinc-500">DAYS</div></div>
-          <div class="text-5xl text-zinc-600 pt-6">:</div>
-          <div><div id="hours" class="text-5xl font-bold neon-cyan">00</div><div class="text-xs text-zinc-500">HRS</div></div>
-          <div><div id="mins" class="text-5xl font-bold neon-cyan">00</div><div class="text-xs text-zinc-500">MIN</div></div>
-          <div><div id="secs" class="text-5xl font-bold neon-cyan">00</div><div class="text-xs text-zinc-500">SEC</div></div>
+      <!-- Streak -->
+      <div class="card p-10 mb-10">
+        <h2 class="text-2xl font-semibold mb-8 flex items-center gap-3">⏳ CURRENT STREAK</h2>
+        <div class="flex justify-center items-center gap-10" id="streak">
+          <div class="text-center">
+            <div id="days" class="text-8xl font-bold neon-pink">42</div>
+            <div class="text-sm tracking-widest text-zinc-400">DAYS</div>
+          </div>
+          <div class="text-6xl text-zinc-700">:</div>
+          <div class="text-center"><div id="hours" class="text-6xl font-bold neon-cyan">00</div><div class="text-xs text-zinc-500">HRS</div></div>
+          <div class="text-center"><div id="mins" class="text-6xl font-bold neon-cyan">00</div><div class="text-xs text-zinc-500">MIN</div></div>
+          <div class="text-center"><div id="secs" class="text-6xl font-bold neon-cyan">00</div><div class="text-xs text-zinc-500">SEC</div></div>
         </div>
-        <button onclick="resetStreak()" class="mt-8 w-full py-4 bg-red-600 hover:bg-red-700 rounded-2xl font-medium text-lg">I'M RELAPSING</button>
+        <button onclick="resetStreak()" class="mt-10 w-full py-5 bg-red-600 hover:bg-red-700 text-lg font-medium rounded-2xl transition">I'M RELAPSING</button>
       </div>
 
       <!-- Milestones -->
-      <div class="card p-8">
+      <div class="card p-10">
         <h2 class="text-3xl font-bold mb-8 neon-cyan">🌟 JOURNEY MILESTONES</h2>
         <div class="grid md:grid-cols-2 gap-6" id="milestones"></div>
       </div>
@@ -87,47 +85,34 @@
       {days:90, title:"Identity Integration", benefits:"Deep clarity, unbreakable discipline", phase:"Lifestyle change"}
     ];
 
-    let streak = 42;
+    let streak = localStorage.getItem('seedguardStreak') ? parseInt(localStorage.getItem('seedguardStreak')) : 42;
 
-    function loadStreak() {
-      const saved = localStorage.getItem('seedguardStreak');
-      if(saved) streak = parseInt(saved);
+    function render() {
       document.getElementById('days').textContent = streak;
-    }
-
-    function saveStreak() {
-      localStorage.setItem('seedguardStreak', streak);
-    }
-
-    function renderMilestones() {
+      
       const container = document.getElementById('milestones');
       container.innerHTML = milestones.map(m => `
-        <div class="milestone card p-6 ${streak >= m.days ? 'unlocked' : ''}">
-          <div class="flex justify-between">
-            <div>
-              <div class="text-5xl font-bold ${streak >= m.days ? 'text-green-400' : 'text-zinc-400'}">${m.days}</div>
-              <div class="font-semibold text-lg mt-1">${m.title}</div>
-            </div>
+        <div class="card p-8 ${streak >= m.days ? 'border-green-500 bg-green-950/30' : ''}">
+          <div class="flex justify-between items-start mb-4">
+            <div class="text-6xl font-bold ${streak >= m.days ? 'text-green-400' : 'text-zinc-500'}">${m.days}</div>
             ${streak >= m.days ? '<span class="text-5xl">🏆</span>' : ''}
           </div>
-          <p class="mt-4 text-zinc-300">${m.benefits}</p>
-          <p class="text-xs text-cyan-400 mt-3">${m.phase}</p>
+          <h3 class="text-xl font-semibold mb-2">${m.title}</h3>
+          <p class="text-zinc-300 mb-3">${m.benefits}</p>
+          <p class="text-cyan-400 text-sm">${m.phase}</p>
         </div>
       `).join('');
     }
 
     function resetStreak() {
-      if(confirm("Reset your streak?")) {
+      if (confirm("Reset streak? This will mark a relapse.")) {
         streak = 0;
-        saveStreak();
-        renderMilestones();
-        document.getElementById('days').textContent = '0';
+        localStorage.setItem('seedguardStreak', '0');
+        render();
       }
     }
 
-    // Init
-    loadStreak();
-    renderMilestones();
+    render();
   </script>
 </body>
 </html>
