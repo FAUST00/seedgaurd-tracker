@@ -12,49 +12,47 @@
     
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: linear-gradient(rgba(10,10,20,0.95), rgba(10,10,20,0.95)), 
-                  url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=2070') center/cover no-repeat fixed;
+      background: linear-gradient(rgba(10,10,25,0.92), rgba(10,10,25,0.92)), 
+                  url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=2070') center/cover fixed;
       color: #e5e5e5;
       margin: 0;
       min-height: 100vh;
     }
-    .neon-cyan { color: #22d3ee; text-shadow: 0 0 10px #22d3ee, 0 0 20px #22d3ee; }
-    .neon-pink { color: #f472b6; text-shadow: 0 0 10px #f472b6, 0 0 20px #f472b6; }
+    .neon-cyan { color: #22d3ee; text-shadow: 0 0 15px #22d3ee, 0 0 30px #22d3ee; }
+    .neon-pink { color: #f472b6; text-shadow: 0 0 15px #f472b6, 0 0 30px #f472b6; }
     .card {
-      background: rgba(20, 20, 35, 0.92);
-      border: 1px solid rgba(99, 102, 241, 0.5);
+      background: rgba(20, 20, 35, 0.95);
+      border: 1px solid rgba(99, 102, 241, 0.6);
       border-radius: 20px;
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
-    .milestone {
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    .milestone { transition: all 0.4s; }
+    .milestone.unlocked { 
+      border-color: #22c55e; 
+      box-shadow: 0 0 25px rgba(74, 222, 128, 0.4);
+      background: rgba(34, 197, 94, 0.1);
     }
-    .milestone.unlocked {
-      border-color: #22c55e;
-      box-shadow: 0 0 25px rgba(74, 222, 128, 0.3);
-      background: rgba(34, 197, 94, 0.08);
-    }
-    .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; }
   </style>
 </head>
 <body class="flex">
 
   <!-- Sidebar -->
-  <aside class="w-64 border-r border-zinc-800 p-6 hidden md:block bg-black/70">
+  <aside class="w-64 border-r border-zinc-800 p-6 hidden md:block bg-black/80">
     <div class="flex items-center gap-3 mb-10">
       <span class="text-4xl">🛡️</span>
-      <h1 class="text-3xl font-bold neon-pink tracking-widest">SEEDGUARD</h1>
+      <h1 class="text-3xl font-bold neon-pink">SEEDGUARD</h1>
     </div>
     <nav class="space-y-2">
-      <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 bg-zinc-900 rounded-2xl text-white font-medium">📊 Dashboard</a>
-      <a href="/history" class="flex items-center gap-3 px-4 py-3 hover:bg-zinc-900 rounded-2xl text-zinc-400">📖 History</a>
+      <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 bg-zinc-900 rounded-2xl text-white">📊 Dashboard</a>
+      <a href="/history.html" class="flex items-center gap-3 px-4 py-3 hover:bg-zinc-900 rounded-2xl text-zinc-400">📖 History</a>
     </nav>
   </aside>
 
-  <main class="flex-1 p-6 md:p-10 overflow-auto">
+  <main class="flex-1 p-6 md:p-10">
     <div class="max-w-5xl mx-auto">
       <div class="flex justify-between items-center mb-8">
-        <h1 class="text-5xl font-bold neon-cyan tracking-tight">DASHBOARD</h1>
+        <h1 class="text-5xl font-bold neon-cyan">DASHBOARD</h1>
         <div class="text-sm text-zinc-400">Austo™ • Beta v0.3</div>
       </div>
 
@@ -62,99 +60,65 @@
       <div class="card p-8 mb-8">
         <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">⏳ CURRENT STREAK</h2>
         <div class="flex justify-center gap-8 text-center" id="streak-display">
-          <div>
-            <div id="days" class="text-7xl font-bold neon-pink">12</div>
-            <div class="text-xs tracking-widest text-zinc-500 mt-1">DAYS</div>
-          </div>
-          <div class="text-5xl text-zinc-700 pt-4">:</div>
-          <div>
-            <div id="hours" class="text-5xl font-bold neon-cyan">00</div>
-            <div class="text-xs tracking-widest text-zinc-500 mt-1">HRS</div>
-          </div>
-          <div>
-            <div id="mins" class="text-5xl font-bold neon-cyan">00</div>
-            <div class="text-xs tracking-widest text-zinc-500 mt-1">MIN</div>
-          </div>
-          <div>
-            <div id="secs" class="text-5xl font-bold neon-cyan">00</div>
-            <div class="text-xs tracking-widest text-zinc-500 mt-1">SEC</div>
-          </div>
+          <div><div id="days" class="text-7xl font-bold neon-pink">42</div><div class="text-xs text-zinc-500">DAYS</div></div>
+          <div class="text-5xl text-zinc-600 pt-6">:</div>
+          <div><div id="hours" class="text-5xl font-bold neon-cyan">00</div><div class="text-xs text-zinc-500">HRS</div></div>
+          <div><div id="mins" class="text-5xl font-bold neon-cyan">00</div><div class="text-xs text-zinc-500">MIN</div></div>
+          <div><div id="secs" class="text-5xl font-bold neon-cyan">00</div><div class="text-xs text-zinc-500">SEC</div></div>
         </div>
-        <button onclick="resetStreak()" class="mt-6 w-full py-3 bg-red-600/80 hover:bg-red-600 rounded-xl text-sm font-medium">I'M RELAPSING</button>
+        <button onclick="resetStreak()" class="mt-8 w-full py-4 bg-red-600 hover:bg-red-700 rounded-2xl font-medium text-lg">I'M RELAPSING</button>
       </div>
 
       <!-- Milestones -->
       <div class="card p-8">
-        <h2 class="text-3xl font-bold mb-8 neon-cyan flex items-center gap-3">🌟 JOURNEY MILESTONES</h2>
-        <div class="grid md:grid-cols-2 gap-6" id="milestones-container"></div>
-      </div>
-
-      <div class="mt-12 text-center text-zinc-500 text-sm">
-        Replace old habits with rituals. Build your identity. Become unstoppable.
+        <h2 class="text-3xl font-bold mb-8 neon-cyan">🌟 JOURNEY MILESTONES</h2>
+        <div class="grid md:grid-cols-2 gap-6" id="milestones"></div>
       </div>
     </div>
   </main>
 
-  <canvas id="confetti" class="confetti"></canvas>
-
   <script>
     const milestones = [
-      {days: 7, title: "The Awakening", benefits: "Increased awareness, motivation surge, better sleep", phase: "Breaking old habits"},
-      {days: 21, title: "Dopamine Reset", benefits: "Clearer thinking, reduced cravings", phase: "Mental recalibration"},
-      {days: 42, title: "First Transformation", benefits: "Natural confidence, productivity boost", phase: "Energy redirection"},
-      {days: 56, title: "Social Shift", benefits: "Stronger presence, respect from others", phase: "Purposeful energy"},
-      {days: 70, title: "Warrior Mode", benefits: "Flow state, powerful focus", phase: "Discipline becomes natural"},
-      {days: 90, title: "Identity Integration", benefits: "Deep clarity, unbreakable discipline", phase: "Lifestyle change"}
+      {days:7, title:"The Awakening", benefits:"Increased awareness, motivation surge, better sleep", phase:"Breaking old habits"},
+      {days:21, title:"Dopamine Reset", benefits:"Clearer thinking, reduced cravings", phase:"Mental recalibration"},
+      {days:42, title:"First Transformation", benefits:"Natural confidence, productivity boost", phase:"Energy redirection"},
+      {days:56, title:"Social Shift", benefits:"Stronger presence & respect", phase:"Purposeful energy"},
+      {days:70, title:"Warrior Mode", benefits:"Flow state, powerful focus", phase:"Discipline becomes natural"},
+      {days:90, title:"Identity Integration", benefits:"Deep clarity, unbreakable discipline", phase:"Lifestyle change"}
     ];
 
-    let currentStreak = 42; // Change this to test (localStorage will remember)
+    let streak = 42;
 
     function loadStreak() {
       const saved = localStorage.getItem('seedguardStreak');
-      if (saved) currentStreak = parseInt(saved);
-      document.getElementById('days').textContent = currentStreak;
+      if(saved) streak = parseInt(saved);
+      document.getElementById('days').textContent = streak;
     }
 
     function saveStreak() {
-      localStorage.setItem('seedguardStreak', currentStreak);
+      localStorage.setItem('seedguardStreak', streak);
     }
 
     function renderMilestones() {
-      const container = document.getElementById('milestones-container');
+      const container = document.getElementById('milestones');
       container.innerHTML = milestones.map(m => `
-        <div class="milestone card p-6 ${currentStreak >= m.days ? 'unlocked' : ''}">
-          <div class="flex justify-between items-start">
+        <div class="milestone card p-6 ${streak >= m.days ? 'unlocked' : ''}">
+          <div class="flex justify-between">
             <div>
-              <div class="text-5xl font-bold ${currentStreak >= m.days ? 'text-green-400' : 'text-zinc-400'}">${m.days}</div>
-              <div class="text-xl font-semibold mt-1">${m.title}</div>
+              <div class="text-5xl font-bold ${streak >= m.days ? 'text-green-400' : 'text-zinc-400'}">${m.days}</div>
+              <div class="font-semibold text-lg mt-1">${m.title}</div>
             </div>
-            ${currentStreak >= m.days ? '🏆' : ''}
+            ${streak >= m.days ? '<span class="text-5xl">🏆</span>' : ''}
           </div>
-          <p class="mt-4 text-sm text-zinc-300">${m.benefits}</p>
+          <p class="mt-4 text-zinc-300">${m.benefits}</p>
           <p class="text-xs text-cyan-400 mt-3">${m.phase}</p>
         </div>
       `).join('');
     }
 
-    function celebrate() {
-      const canvas = document.getElementById('confetti');
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      
-      // Simple confetti animation (you can expand this)
-      for (let i = 0; i < 150; i++) {
-        setTimeout(() => {
-          ctx.fillStyle = `hsl(${Math.random()*360}, 100%, 70%)`;
-          ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 8, 8);
-        }, i * 8);
-      }
-      setTimeout(() => canvas.style.display = 'none', 4000);
-    }
-
     function resetStreak() {
-      if (confirm("Reset streak? This marks a relapse.")) {
-        currentStreak = 0;
+      if(confirm("Reset your streak?")) {
+        streak = 0;
         saveStreak();
         renderMilestones();
         document.getElementById('days').textContent = '0';
@@ -164,11 +128,6 @@
     // Init
     loadStreak();
     renderMilestones();
-    
-    // Auto-increment for demo (remove in production)
-    setInterval(() => {
-      // currentStreak++; saveStreak(); renderMilestones(); // Uncomment if you want live increase
-    }, 10000);
   </script>
 </body>
 </html>
