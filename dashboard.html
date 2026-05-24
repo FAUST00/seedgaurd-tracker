@@ -5,114 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SeedGuard • Dashboard</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
-    
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@600;700&display=swap');
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: linear-gradient(rgba(10,10,30,0.95), rgba(10,10,30,0.95)), 
-                  url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=2070') center/cover fixed;
+      background: linear-gradient(rgba(10,10,30,0.95), rgba(10,10,30,0.95)), url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=2070') center/cover fixed;
       color: #e5e5e5;
+      margin: 0;
       min-height: 100vh;
-      overflow-x: hidden;
     }
-    .neon-cyan { color: #67e8f9; text-shadow: 0 0 15px #67e8f9, 0 0 30px #22d3ee; }
-    .neon-pink { color: #f472b6; text-shadow: 0 0 15px #f472b6, 0 0 30px #db2777; }
-    
+    .neon-cyan { color: #67e8f9; text-shadow: 0 0 15px #67e8f9; }
+    .neon-pink { color: #f472b6; text-shadow: 0 0 15px #f472b6; }
     .card {
       background: rgba(15, 23, 42, 0.92);
-      border: 1px solid rgba(103, 232, 249, 0.3);
+      border: 1px solid rgba(103, 232, 249, 0.4);
       border-radius: 20px;
+      padding: 2rem;
       backdrop-filter: blur(16px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     }
   </style>
 </head>
-<body class="flex">
-
+<body class="flex flex-col lg:flex-row">
   <!-- Sidebar -->
-  <aside class="w-72 border-r border-cyan-900/50 p-8 hidden lg:block bg-black/70">
-    <div class="flex items-center gap-4 mb-12">
-      <span class="text-5xl">🛡️</span>
-      <h1 class="text-4xl font-bold neon-pink tracking-widest">SEEDGUARD</h1>
-    </div>
-    <nav class="space-y-2">
-      <a href="dashboard.html" class="flex items-center gap-4 px-6 py-4 bg-cyan-950/50 text-white rounded-2xl font-medium">📊 Dashboard</a>
-      <a href="history.html" class="flex items-center gap-4 px-6 py-4 hover:bg-zinc-900 rounded-2xl text-zinc-400">📖 History</a>
+  <aside class="lg:w-72 p-8 bg-black/70 border-r border-cyan-900">
+    <h1 class="text-4xl font-bold neon-pink mb-12">SEEDGUARD</h1>
+    <nav>
+      <a href="dashboard.html" class="block py-4 px-6 bg-cyan-900/50 rounded-2xl mb-2">📊 Dashboard</a>
+      <a href="history.html" class="block py-4 px-6 hover:bg-zinc-900 rounded-2xl text-zinc-400">📖 History</a>
     </nav>
   </aside>
 
-  <main class="flex-1 p-6 lg:p-12">
-    <div class="max-w-6xl mx-auto">
-      <div class="flex justify-between items-end mb-12">
-        <div>
-          <h1 class="text-6xl font-bold neon-cyan">DASHBOARD</h1>
-          <p class="text-cyan-400 mt-2">Austo™ • Beta v0.4</p>
-        </div>
-      </div>
+  <main class="flex-1 p-8 lg:p-12">
+    <h1 class="text-5xl font-bold neon-cyan mb-2">DASHBOARD</h1>
+    <p class="text-cyan-400 mb-10">Austo™ • Beta v0.4</p>
 
-      <!-- Streak -->
-      <div class="card p-10 mb-10">
-        <h2 class="text-2xl font-semibold mb-8 flex items-center gap-3">⏳ CURRENT STREAK</h2>
-        <div class="flex justify-center items-center gap-10" id="streak">
-          <div class="text-center">
-            <div id="days" class="text-8xl font-bold neon-pink">42</div>
-            <div class="text-sm tracking-widest text-zinc-400">DAYS</div>
-          </div>
-          <div class="text-6xl text-zinc-700">:</div>
-          <div class="text-center"><div id="hours" class="text-6xl font-bold neon-cyan">00</div><div class="text-xs text-zinc-500">HRS</div></div>
-          <div class="text-center"><div id="mins" class="text-6xl font-bold neon-cyan">00</div><div class="text-xs text-zinc-500">MIN</div></div>
-          <div class="text-center"><div id="secs" class="text-6xl font-bold neon-cyan">00</div><div class="text-xs text-zinc-500">SEC</div></div>
-        </div>
-        <button onclick="resetStreak()" class="mt-10 w-full py-5 bg-red-600 hover:bg-red-700 text-lg font-medium rounded-2xl transition">I'M RELAPSING</button>
+    <!-- Streak -->
+    <div class="card mb-10">
+      <h2 class="text-2xl font-semibold mb-6">⏳ CURRENT STREAK</h2>
+      <div class="text-center">
+        <div id="days" class="text-8xl font-bold neon-pink">42</div>
+        <div class="text-zinc-400 text-sm tracking-widest">DAYS</div>
       </div>
+      <button onclick="resetStreak()" class="mt-8 w-full py-5 bg-red-600 hover:bg-red-700 rounded-2xl text-lg font-medium">I'M RELAPSING</button>
+    </div>
 
-      <!-- Milestones -->
-      <div class="card p-10">
-        <h2 class="text-3xl font-bold mb-8 neon-cyan">🌟 JOURNEY MILESTONES</h2>
-        <div class="grid md:grid-cols-2 gap-6" id="milestones"></div>
-      </div>
+    <!-- Milestones -->
+    <div class="card">
+      <h2 class="text-3xl font-bold neon-cyan mb-8">🌟 JOURNEY MILESTONES</h2>
+      <div id="milestones" class="space-y-6"></div>
     </div>
   </main>
 
   <script>
     const milestones = [
-      {days:7, title:"The Awakening", benefits:"Increased awareness, motivation surge, better sleep", phase:"Breaking old habits"},
-      {days:21, title:"Dopamine Reset", benefits:"Clearer thinking, reduced cravings", phase:"Mental recalibration"},
-      {days:42, title:"First Transformation", benefits:"Natural confidence, productivity boost", phase:"Energy redirection"},
-      {days:56, title:"Social Shift", benefits:"Stronger presence & respect", phase:"Purposeful energy"},
-      {days:70, title:"Warrior Mode", benefits:"Flow state, powerful focus", phase:"Discipline becomes natural"},
-      {days:90, title:"Identity Integration", benefits:"Deep clarity, unbreakable discipline", phase:"Lifestyle change"}
+      {days:7, title:"The Awakening", benefits:"Increased awareness, motivation surge, better sleep"},
+      {days:21, title:"Dopamine Reset", benefits:"Clearer thinking, reduced cravings"},
+      {days:42, title:"First Transformation", benefits:"Natural confidence, productivity boost"},
+      {days:56, title:"Social Shift", benefits:"Stronger presence & respect"},
+      {days:70, title:"Warrior Mode", benefits:"Flow state, powerful focus"},
+      {days:90, title:"Identity Integration", benefits:"Deep clarity, unbreakable discipline"}
     ];
 
     let streak = localStorage.getItem('seedguardStreak') ? parseInt(localStorage.getItem('seedguardStreak')) : 42;
 
-    function render() {
-      document.getElementById('days').textContent = streak;
-      
+    function renderMilestones() {
       const container = document.getElementById('milestones');
       container.innerHTML = milestones.map(m => `
-        <div class="card p-8 ${streak >= m.days ? 'border-green-500 bg-green-950/30' : ''}">
-          <div class="flex justify-between items-start mb-4">
-            <div class="text-6xl font-bold ${streak >= m.days ? 'text-green-400' : 'text-zinc-500'}">${m.days}</div>
-            ${streak >= m.days ? '<span class="text-5xl">🏆</span>' : ''}
+        <div class="card p-6 ${streak >= m.days ? 'border-green-500' : ''}">
+          <div class="flex justify-between">
+            <div>
+              <span class="text-4xl font-bold ${streak >= m.days ? 'text-green-400' : 'text-zinc-400'}">${m.days}</span>
+              <span class="ml-4 text-xl font-semibold">${m.title}</span>
+            </div>
+            ${streak >= m.days ? '🏆' : ''}
           </div>
-          <h3 class="text-xl font-semibold mb-2">${m.title}</h3>
-          <p class="text-zinc-300 mb-3">${m.benefits}</p>
-          <p class="text-cyan-400 text-sm">${m.phase}</p>
+          <p class="mt-3 text-zinc-300">${m.benefits}</p>
         </div>
       `).join('');
+      document.getElementById('days').textContent = streak;
     }
 
     function resetStreak() {
-      if (confirm("Reset streak? This will mark a relapse.")) {
+      if (confirm("Reset streak?")) {
         streak = 0;
         localStorage.setItem('seedguardStreak', '0');
-        render();
+        renderMilestones();
       }
     }
 
-    render();
+    renderMilestones();
   </script>
 </body>
 </html>
