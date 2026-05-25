@@ -1,351 +1,214 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>The Retention Journey — Section Preview (Solid Icons)</title>
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'navy-900': '#030617',
-            'navy-800': '#071226',
-            'deep-900': '#03101a',
-            'accent-cyan': '#00E5FF',
-            'accent-green': '#34FFB9',
-            'accent-gold': '#FFD166'
-          },
-          boxShadow: {
-            'soft-glow': '0 8px 30px rgba(2,6,23,0.6)'
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SeedGuard | Retention Journey</title>
+    <link rel="icon" href="/seedgaurd-tracker/favicon.ico" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              surface: '#05070f',
+              glow: '#02f7ff',
+              neon: '#ff2dff',
+              accent: '#86f3ff'
+            }
           }
         }
       }
-    }
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-navy-900 text-slate-100 antialiased">
+    </script>
+    <style>
+      body {
+        background: radial-gradient(circle at top, rgba(2, 247, 255, 0.05), transparent 26%),
+          radial-gradient(circle at 20% 10%, rgba(255, 45, 255, 0.09), transparent 18%),
+          linear-gradient(180deg, #01030a 0%, #05070f 100%);
+      }
+      .neon-text-pink {
+        color: #ff88ff;
+        text-shadow: 0 0 8px rgba(255, 45, 255, 0.9), 0 0 20px rgba(255, 45, 255, 0.4);
+      }
+      .neon-text-cyan {
+        color: #8dfcff;
+        text-shadow: 0 0 8px rgba(2, 247, 255, 0.9), 0 0 20px rgba(2, 247, 255, 0.35);
+      }
+      .neon-panel {
+        background: rgba(9, 12, 24, 0.78);
+        border: 1px solid rgba(255, 45, 255, 0.16);
+        box-shadow: 0 0 28px rgba(255, 45, 255, 0.08);
+        backdrop-filter: blur(18px);
+      }
+      .neon-panel-cyan {
+        border-color: rgba(2, 247, 255, 0.18);
+        box-shadow: 0 0 20px rgba(2, 247, 255, 0.12);
+      }
+      .neon-link {
+        color: #8dfcff;
+      }
+      .neon-link:hover {
+        text-decoration: underline;
+      }
+      .hover-glow:hover {
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen text-zinc-100 antialiased">
+    <div class="relative overflow-hidden">
+      <div class="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top,_rgba(255,45,255,0.24),_transparent_32%)]" aria-hidden="true"></div>
+      <div class="pointer-events-none absolute inset-x-0 bottom-0 h-52 bg-[radial-gradient(circle_at_bottom,_rgba(2,247,255,0.16),_transparent_28%)]" aria-hidden="true"></div>
+      <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div class="space-y-3">
+            <a href="/seedgaurd-tracker/index.html" class="inline-flex items-center gap-2 text-sm uppercase tracking-[0.35em] text-zinc-400 hover:text-white neon-link">← Back to SeedGuard</a>
+            <p class="text-sm uppercase tracking-[0.4em] text-zinc-500">Extended guide</p>
+            <h1 class="max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl neon-text-cyan">Retention Journey</h1>
+            <p class="max-w-2xl text-lg leading-8 text-zinc-300 sm:text-xl">
+              A midnight Miami roadmap for streak energy, quiet focus, and a lean long-term identity.
+            </p>
+          </div>
+          <div class="rounded-3xl neon-panel p-4 text-sm text-zinc-300 ring-1 ring-white/5 sm:w-72">
+            <p class="font-semibold uppercase tracking-widest text-zinc-400">SynthCity Vibes</p>
+            <p class="mt-3 leading-7 text-zinc-300">
+              Compact, persuasive guidance built to feel seamless with the SeedGuard dashboard — no extra noise, just neon clarity.
+            </p>
+          </div>
+        </div>
 
-<section id="retention-journey" class="py-12 px-4 md:py-20">
-  <div class="max-w-7xl mx-auto">
-
-    <header class="text-center mb-8">
-      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-accent-cyan to-accent-gold">
-        The Retention Journey
-      </h1>
-      <p class="mt-3 text-sm sm:text-base text-slate-300 max-w-2xl mx-auto">
-        Transform your life through disciplined streaks. Each phase builds a stronger, more focused version of you.
-      </p>
-    </header>
-
-    <div class="flex justify-center mb-8">
-      <div class="w-full md:w-3/4 lg:w-2/3 bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.04)] rounded-2xl p-6 shadow-soft-glow">
-        <h3 class="text-xl font-semibold text-slate-100 mb-2">Core Philosophy</h3>
-        <p class="text-slate-300">
-          Retention is about rebuilding your identity — not just resisting urges. Replace old habits with powerful rituals like exercise, cold showers, meditation, journaling, sunlight, and healthy eating. Turn discipline into lifestyle.
-        </p>
-      </div>
-    </div>
-
-    <div class="relative">
-      <div class="absolute left-1/2 -translate-x-1/2 top-6 bottom-6 w-1 rounded-full md:hidden">
-        <div class="h-full w-full rounded-full bg-gradient-to-b from-accent-cyan/70 via-accent-green/40 to-accent-gold/30"></div>
-      </div>
-      <div class="hidden md:block absolute top-1/2 left-6 right-6 h-1">
-        <div class="h-full w-full rounded-full bg-gradient-to-r from-accent-cyan/70 via-accent-green/40 to-accent-gold/30"></div>
-      </div>
-
-      <div class="md:grid md:grid-cols-6 md:gap-6">
-        <div class="md:col-span-6">
-          <div class="space-y-8 md:space-y-0 md:flex md:items-stretch md:justify-between">
-            <div class="md:hidden max-h-[70vh] overflow-y-auto snap-y snap-mandatory space-y-8 px-6">
-              <article class="snap-start bg-gradient-to-b from-deep-900 to-navy-800 border border-[rgba(255,255,255,0.03)] rounded-2xl p-5 shadow-soft-glow">
-                <div class="flex items-start gap-4">
-                  <div class="flex-none w-12 h-12 rounded-full bg-[linear-gradient(135deg,#071826,#06263a)] border border-accent-cyan/20 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-accent-cyan" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <path d="M6.76 4.84l-1.8-1.79L3.17 5.84l1.79 1.79 1.8-2.79zM1 13h3v-2H1v2zm10-9h2V1h-2v3zm8.83 2.04l-1.79-1.79-1.8 1.79 1.79 1.79 1.8-1.79zM17 11v2h3v-2h-3zM12 6a6 6 0 100 12 6 6 0 000-12zM4.24 18.36l1.8 1.79 1.79-1.79-1.79-1.79-1.8 1.79zM18.36 18.36l1.79 1.79 1.79-1.79-1.8-1.79-1.78 1.79zM11 21h2v-3h-2v3z"/>
-                    </svg>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <div class="text-sm font-semibold text-accent-cyan">Days 1–7 — The Awakening</div>
-                        <div class="text-xs text-slate-400 mt-1">Focus: Awareness & momentum</div>
-                      </div>
-                      <div class="text-xs text-slate-400">Phase 1</div>
-                    </div>
-                    <div class="mt-3 text-sm text-slate-300">
-                      <strong class="text-slate-100">Key Challenges</strong>
-                      <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>Intense urges & temptation spikes</li>
-                        <li>Low energy and restlessness</li>
-                      </ul>
-                      <strong class="text-slate-100 block mt-3">Key Benefits</strong>
-                      <ul class="mt-2 space-y-1">
-                        <li class="flex items-center"><svg class="w-4 h-4 text-accent-cyan mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M20.285 6.708l-11.49 11.49L3.715 13.12l1.414-1.414 3.667 3.667 10.077-10.077z"/></svg>First confidence boost</li>
-                        <li class="flex items-center"><svg class="w-4 h-4 text-accent-cyan mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M20.285 6.708l-11.49 11.49L3.715 13.12l1.414-1.414 3.667 3.667 10.077-10.077z"/></svg>Clearer mornings</li>
-                      </ul>
-                      <strong class="text-slate-100 block mt-3">Recommended Habits</strong>
-                      <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>Daily cold shower & morning sunlight</li>
-                        <li>Short workout + journaling (5–10 min)</li>
-                      </ul>
-                      <p class="mt-3 text-xs text-slate-400">App Features: streak tracker, daily prompts</p>
-                    </div>
-                  </div>
-                </div>
-              </article>
-
-              <article class="snap-start bg-gradient-to-b from-deep-900 to-navy-800 border border-[rgba(255,255,255,0.03)] rounded-2xl p-5 shadow-soft-glow">
-                <div class="flex items-start gap-4">
-                  <div class="flex-none w-12 h-12 rounded-full bg-[linear-gradient(135deg,#071826,#06263a)] border border-accent-green/20 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-accent-green" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <div class="text-sm font-semibold text-accent-green">Days 8–21 — Dopamine Reset</div>
-                        <div class="text-xs text-slate-400 mt-1">Focus: Recalibrate reward system</div>
-                      </div>
-                      <div class="text-xs text-slate-400">Phase 2</div>
-                    </div>
-                    <div class="mt-3 text-sm text-slate-300">
-                      <strong class="text-slate-100">Key Challenges</strong>
-                      <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>Cravings for quick dopamine hits</li>
-                        <li>Frustration and boredom</li>
-                      </ul>
-                      <strong class="text-slate-100 block mt-3">Key Benefits</strong>
-                      <ul class="mt-2 space-y-1">
-                        <li class="flex items-center"><svg class="w-4 h-4 text-accent-green mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M20.285 6.708l-11.49 11.49L3.715 13.12l1.414-1.414 3.667 3.667 10.077-10.077z"/></svg>Better focus & reward sensitivity</li>
-                        <li class="flex items-center"><svg class="w-4 h-4 text-accent-green mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M20.285 6.708l-11.49 11.49L3.715 13.12l1.414-1.414 3.667 3.667 10.077-10.077z"/></svg>Improved mood stability</li>
-                      </ul>
-                      <strong class="text-slate-100 block mt-3">Recommended Habits</strong>
-                      <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>Phone curfew, social media limits</li>
-                        <li>Cold exposure, focused breathing</li>
-                      </ul>
-                      <p class="mt-3 text-xs text-slate-400">App Features: daily challenge mode, focus timers</p>
-                    </div>
-                  </div>
-                </div>
-              </article>
-
-              <article class="snap-start bg-gradient-to-b from-deep-900 to-navy-800 border border-[rgba(255,255,255,0.03)] rounded-2xl p-5 shadow-soft-glow">
-                <div class="flex items-start gap-4">
-                  <div class="flex-none w-12 h-12 rounded-full bg-[linear-gradient(135deg,#071826,#06263a)] border border-accent-cyan/20 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-accent-cyan" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2a10 10 0 107.07 17.07L17 19l1.4-1.4A8 8 0 114 12h2l-3 3-3-3h2a10 10 0 1010-10z"/></svg>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <div class="text-sm font-semibold text-accent-cyan">Days 22–42 — First Transformation</div>
-                        <div class="text-xs text-slate-400 mt-1">Focus: Habit consolidation</div>
-                      </div>
-                      <div class="text-xs text-slate-400">Phase 3</div>
-                    </div>
-                    <div class="mt-3 text-sm text-slate-300">
-                      <strong class="text-slate-100">Key Challenges</strong>
-                      <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>Plateaus in motivation</li>
-                        <li>Testing of new identity patterns</li>
-                      </ul>
-                      <strong class="text-slate-100 block mt-3">Key Benefits</strong>
-                      <ul class="mt-2 space-y-1">
-                        <li class="flex items-center"><svg class="w-4 h-4 text-accent-cyan mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M20.285 6.708l-11.49 11.49L3.715 13.12l1.414-1.414 3.667 3.667 10.077-10.077z"/></svg>Reliable daily wins</li>
-                        <li class="flex items-center"><svg class="w-4 h-4 text-accent-cyan mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M20.285 6.708l-11.49 11.49L3.715 13.12l1.414-1.414 3.667 3.667 10.077-10.077z"/></svg>Rising energy & clarity</li>
-                      </ul>
-                      <strong class="text-slate-100 block mt-3">Recommended Habits</strong>
-                      <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>Structured workouts & nutrient-rich meals</li>
-                        <li>Daily journaling + plan for the day</li>
-                      </ul>
-                      <p class="mt-3 text-xs text-slate-400">App Features: habit streak visualizer, streak reminders</p>
-                    </div>
-                  </div>
-                </div>
-              </article>
-
-              <article class="snap-start bg-gradient-to-b from-deep-900 to-navy-800 border border-[rgba(255,255,255,0.03)] rounded-2xl p-5 shadow-soft-glow">
-                <div class="flex items-start gap-4">
-                  <div class="flex-none w-12 h-12 rounded-full bg-[linear-gradient(135deg,#071826,#06263a)] border border-accent-gold/20 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-accent-gold" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zM2 17c0-2.21 3.58-4 8-4s8 1.79 8 4v1H2v-1z"/></svg>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <div class="text-sm font-semibold text-accent-gold">Days 43–56 — Social Shift</div>
-                        <div class="text-xs text-slate-400 mt-1">Focus: Relationships & confidence</div>
-                      </div>
-                      <div class="text-xs text-slate-400">Phase 4</div>
-                    </div>
-                    <div class="mt-3 text-sm text-slate-300">
-                      <strong class="text-slate-100">Key Challenges</strong>
-                      <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>Old social patterns resurface</li>
-                        <li>Testing boundaries and new identity</li>
-                      </ul>
-                      <strong class="text-slate-100 block mt-3">Key Benefits</strong>
-                      <ul class="mt-2 space-y-1">
-                        <li class="flex items-center"><svg class="w-4 h-4 text-accent-gold mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M20.285 6.708l-11.49 11.49L3.715 13.12l1.414-1.414 3.667 3.667 10.077-10.077z"/></svg>Improved social presence</li>
-                        <li class="flex items-center"><svg class="w-4 h-4 text-accent-gold mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M20.285 6.708l-11.49 11.49L3.715 13.12l1.414-1.414 3.667 3.667 10.077-10.077z"/></svg>Deeper, honest connections</li>
-                      </ul>
-                      <strong class="text-slate-100 block mt-3">Recommended Habits</strong>
-                      <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>Practice vulnerability & honest conversations</li>
-                        <li>Group workouts or accountability partners</li>
-                      </ul>
-                      <p class="mt-3 text-xs text-slate-400">App Features: accountability circle, shareable milestones</p>
-                    </div>
-                  </div>
-                </div>
-              </article>
-
-              <article class="snap-start bg-gradient-to-b from-deep-900 to-navy-800 border border-[rgba(255,255,255,0.03)] rounded-2xl p-5 shadow-soft-glow">
-                <div class="flex items-start gap-4">
-                  <div class="flex-none w-12 h-12 rounded-full bg-[linear-gradient(135deg,#071826,#06263a)] border border-accent-cyan/20 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-accent-cyan" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.8 9.9-8 11-4.2-1.1-8-6-8-11V6l8-4zM10 13l2 2 5-5-1.4-1.4L12 12.2 11.4 11.6 10 13z"/></svg>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <div class="text-sm font-semibold text-accent-cyan">Days 57–70 — Warrior Mode</div>
-                        <div class="text-xs text-slate-400 mt-1">Focus: Discipline & toughness</div>
-                      </div>
-                      <div class="text-xs text-slate-400">Phase 5</div>
-                    </div>
-                    <div class="mt-3 text-sm text-slate-300">
-                      <strong class="text-slate-100">Key Challenges</strong>
-                      <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>High expectations, risk of burnout</li>
-                        <li>Testing limits physically and mentally</li>
-                      </ul>
-                      <strong class="text-slate-100 block mt-3">Key Benefits</strong>
-                      <ul class="mt-2 space-y-1">
-                        <li class="flex items-center"><svg class="w-4 h-4 text-accent-cyan mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M20.285 6.708l-11.49 11.49L3.715 13.12l1.414-1.414 3.667 3.667 10.077-10.077z"/></svg>Peak productivity & resilience</li>
-                        <li class="flex items-center"><svg class="w-4 h-4 text-accent-cyan mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M20.285 6.708l-11.49 11.49L3.715 13.12l1.414-1.414 3.667 3.667 10.077-10.077z"/></svg>Heightened physical performance</li>
-                      </ul>
-                      <strong class="text-slate-100 block mt-3">Recommended Habits</strong>
-                      <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>Progressive overload training & cold exposure</li>
-                        <li>Structured sleep & recovery plan</li>
-                      </ul>
-                      <p class="mt-3 text-xs text-slate-400">App Features: performance analytics, recovery reminders</p>
-                    </div>
-                  </div>
-                </div>
-              </article>
-
-              <article class="snap-start bg-gradient-to-b from-deep-900 to-navy-800 border border-[rgba(255,255,255,0.03)] rounded-2xl p-5 shadow-soft-glow">
-                <div class="flex items-start gap-4">
-                  <div class="flex-none w-12 h-12 rounded-full bg-[linear-gradient(135deg,#071826,#06263a)] border border-accent-green/20 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-accent-green" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.8 9.9-8 11-4.2-1.1-8-6-8-11V6l8-4zM9 11l2 2 4-4-1.4-1.4L11 11.2 10.4 10.6 9 11z"/></svg>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <div class="text-sm font-semibold text-accent-green">Days 71–90 — Identity Integration</div>
-                        <div class="text-xs text-slate-400 mt-1">Focus: Lasting identity shift</div>
-                      </div>
-                      <div class="text-xs text-slate-400">Phase 6</div>
-                    </div>
-                    <div class="mt-3 text-sm text-slate-300">
-                      <strong class="text-slate-100">Key Challenges</strong>
-                      <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>Avoiding complacency</li>
-                        <li>Balancing growth with life demands</li>
-                      </ul>
-                      <strong class="text-slate-100 block mt-3">Key Benefits</strong>
-                      <ul class="mt-2 space-y-1">
-                        <li class="flex items-center"><svg class="w-4 h-4 text-accent-green mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M20.285 6.708l-11.49 11.49L3.715 13.12l1.414-1.414 3.667 3.667 10.077-10.077z"/></svg>Identity aligned with discipline</li>
-                        <li class="flex items-center"><svg class="w-4 h-4 text-accent-green mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M20.285 6.708l-11.49 11.49L3.715 13.12l1.414-1.414 3.667 3.667 10.077-10.077z"/></svg>Purpose-driven daily life</li>
-                      </ul>
-                      <strong class="text-slate-100 block mt-3">Recommended Habits</strong>
-                      <ul class="list-disc list-inside mt-2 space-y-1">
-                        <li>Maintain rituals & mentor others</li>
-                        <li>Design long-term goals and legacy work</li>
-                      </ul>
-                      <p class="mt-3 text-xs text-slate-400">App Features: legacy journal, long-term trends</p>
-                    </div>
-                  </div>
-                </div>
-              </article>
+        <section class="mt-10 grid gap-6 lg:grid-cols-[2fr_1fr]">
+          <div class="space-y-6">
+            <div class="rounded-3xl neon-panel p-8 neon-panel-cyan">
+              <div class="flex items-center gap-3 text-zinc-300">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-glow/30 bg-white/5 text-glow shadow-[0_0_20px_rgba(2,247,255,0.25)]">01</span>
+                <h2 class="text-2xl font-bold tracking-tight neon-text-pink">Why this page fits SeedGuard</h2>
+              </div>
+              <p class="mt-4 text-zinc-300 leading-7">
+                It is not a brochure. It is the extended mental map for users who want the app to feel like a late-night drive through neon city streets: sharper, bolder, and built around a streak that sticks.
+              </p>
             </div>
 
-            <div class="hidden md:grid md:grid-cols-6 md:col-span-6 md:gap-6 mt-10">
-              <article class="md:col-span-1 flex flex-col items-center">
-                <div class="w-14 h-14 rounded-full bg-[linear-gradient(135deg,#071826,#06263a)] border border-accent-cyan/20 flex items-center justify-center -mt-8 shadow-lg">
-                  <svg class="w-6 h-6 text-accent-cyan" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M6.76 4.84l-1.8-1.79L3.17 5.84l1.79 1.79 1.8-2.79zM1 13h3v-2H1v2zm10-9h2V1h-2v3zm8.83 2.04l-1.79-1.79-1.8 1.79 1.79 1.79 1.8-1.79zM17 11v2h3v-2h-3zM12 6a6 6 0 100 12 6 6 0 000-12zM4.24 18.36l1.8 1.79 1.79-1.79-1.79-1.79-1.8 1.79zM18.36 18.36l1.79 1.79 1.79-1.79-1.8-1.79-1.78 1.79zM11 21h2v-3h-2v3z"/></svg>
-                </div>
-                <div class="mt-4 w-full bg-gradient-to-b from-deep-900 to-navy-800 border border-[rgba(255,255,255,0.03)] rounded-2xl p-5 hover:scale-[1.02] hover:-translate-y-1 transition-transform duration-300">
-                  <div class="text-sm font-semibold text-accent-cyan">Days 1–7 — The Awakening</div>
-                  <div class="text-xs text-slate-400 mt-1">Focus: Awareness & momentum</div>
-                </div>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <article class="rounded-3xl neon-panel p-6 hover-glow transition-transform">
+                <h3 class="text-xl font-semibold neon-text-cyan">Focus over features</h3>
+                <p class="mt-3 text-zinc-300 leading-7">Keep the page direct: one clear purpose, one strong outcome. Streak momentum becomes identity.</p>
               </article>
-              <article class="md:col-span-1 flex flex-col items-center">
-                <div class="w-14 h-14 rounded-full bg-[linear-gradient(135deg,#071826,#06263a)] border border-accent-green/20 flex items-center justify-center -mt-8 shadow-lg">
-                  <svg class="w-6 h-6 text-accent-green" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
-                </div>
-                <div class="mt-4 w-full bg-gradient-to-b from-deep-900 to-navy-800 border border-[rgba(255,255,255,0.03)] rounded-2xl p-5 hover:scale-[1.02] hover:-translate-y-1 transition-transform duration-300">
-                  <div class="text-sm font-semibold text-accent-green">Days 8–21 — Dopamine Reset</div>
-                  <div class="text-xs text-slate-400 mt-1">Focus: Recalibrate reward system</div>
-                </div>
-              </article>
-              <article class="md:col-span-1 flex flex-col items-center">
-                <div class="w-14 h-14 rounded-full bg-[linear-gradient(135deg,#071826,#06263a)] border border-accent-cyan/20 flex items-center justify-center -mt-8 shadow-lg">
-                  <svg class="w-6 h-6 text-accent-cyan" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a10 10 0 107.07 17.07L17 19l1.4-1.4A8 8 0 114 12h2l-3 3-3-3h2a10 10 0 1010-10z"/></svg>
-                </div>
-                <div class="mt-4 w-full bg-gradient-to-b from-deep-900 to-navy-800 border border-[rgba(255,255,255,0.03)] rounded-2xl p-5 hover:scale-[1.02] hover:-translate-y-1 transition-transform duration-300">
-                  <div class="text-sm font-semibold text-accent-cyan">Days 22–42 — First Transformation</div>
-                  <div class="text-xs text-slate-400 mt-1">Focus: Habit consolidation</div>
-                </div>
-              </article>
-              <article class="md:col-span-1 flex flex-col items-center">
-                <div class="w-14 h-14 rounded-full bg-[linear-gradient(135deg,#071826,#06263a)] border border-accent-gold/20 flex items-center justify-center -mt-8 shadow-lg">
-                  <svg class="w-6 h-6 text-accent-gold" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zM2 17c0-2.21 3.58-4 8-4s8 1.79 8 4v1H2v-1z"/></svg>
-                </div>
-                <div class="mt-4 w-full bg-gradient-to-b from-deep-900 to-navy-800 border border-[rgba(255,255,255,0.03)] rounded-2xl p-5 hover:scale-[1.02] hover:-translate-y-1 transition-transform duration-300">
-                  <div class="text-sm font-semibold text-accent-gold">Days 43–56 — Social Shift</div>
-                  <div class="text-xs text-slate-400 mt-1">Focus: Relationships & confidence</div>
-                </div>
-              </article>
-              <article class="md:col-span-1 flex flex-col items-center">
-                <div class="w-14 h-14 rounded-full bg-[linear-gradient(135deg,#071826,#06263a)] border border-accent-cyan/20 flex items-center justify-center -mt-8 shadow-lg">
-                  <svg class="w-6 h-6 text-accent-cyan" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l8 4v6c0 5-3.8 9.9-8 11-4.2-1.1-8-6-8-11V6l8-4zM10 13l2 2 5-5-1.4-1.4L12 12.2 11.4 11.6 10 13z"/></svg>
-                </div>
-                <div class="mt-4 w-full bg-gradient-to-b from-deep-900 to-navy-800 border border-[rgba(255,255,255,0.03)] rounded-2xl p-5 hover:scale-[1.02] hover:-translate-y-1 transition-transform duration-300">
-                  <div class="text-sm font-semibold text-accent-cyan">Days 57–70 — Warrior Mode</div>
-                  <div class="text-xs text-slate-400 mt-1">Focus: Discipline & toughness</div>
-                </div>
-              </article>
-              <article class="md:col-span-1 flex flex-col items-center">
-                <div class="w-14 h-14 rounded-full bg-[linear-gradient(135deg,#071826,#06263a)] border border-accent-green/20 flex items-center justify-center -mt-8 shadow-lg">
-                  <svg class="w-6 h-6 text-accent-green" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l8 4v6c0 5-3.8 9.9-8 11-4.2-1.1-8-6-8-11V6l8-4zM9 11l2 2 4-4-1.4-1.4L11 11.2 10.4 10.6 9 11z"/></svg>
-                </div>
-                <div class="mt-4 w-full bg-gradient-to-b from-deep-900 to-navy-800 border border-[rgba(255,255,255,0.03)] rounded-2xl p-5 hover:scale-[1.02] hover:-translate-y-1 transition-transform duration-300">
-                  <div class="text-sm font-semibold text-accent-green">Days 71–90 — Identity Integration</div>
-                  <div class="text-xs text-slate-400 mt-1">Focus: Lasting identity shift</div>
-                </div>
+              <article class="rounded-3xl neon-panel p-6 hover-glow transition-transform">
+                <h3 class="text-xl font-semibold neon-text-pink">Built for rhythm</h3>
+                <p class="mt-3 text-zinc-300 leading-7">Every phase is a pulse in the system, designed to make progress feel like controlled acceleration.</p>
               </article>
             </div>
           </div>
-        </div>
-      </div>
+
+          <aside class="rounded-3xl neon-panel p-8 border-cyan-400/15 bg-[#06080f] shadow-[0_0_40px_rgba(2,247,255,0.08)]">
+            <p class="text-xs uppercase tracking-[0.35em] text-zinc-500">Fast lane summary</p>
+            <div class="mt-5 space-y-4">
+              <div class="rounded-3xl border border-glow/10 bg-white/5 p-4">
+                <p class="text-zinc-300 font-semibold">One page. One rhythm.</p>
+                <p class="mt-2 text-zinc-400 text-sm leading-6">This is the extended journey that slots into the app without breaking its dark neon flow.</p>
+              </div>
+              <div class="rounded-3xl border border-pink-400/10 bg-white/5 p-4">
+                <p class="text-zinc-300 font-semibold">What it does</p>
+                <ul class="mt-3 flex flex-col gap-2 text-zinc-400 text-sm leading-6">
+                  <li>Frames streak progress into phases</li>
+                  <li>Guides attention with compact prompts</li>
+                  <li>Keeps language sharp and atmospheric</li>
+                </ul>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="mt-12 space-y-8">
+          <div class="space-y-3">
+            <p class="text-sm uppercase tracking-[0.35em] text-zinc-500">Six phases to ownership</p>
+            <h2 class="text-3xl font-bold tracking-tight neon-text-cyan sm:text-4xl">A streak system that feels like driving through the city at night.</h2>
+          </div>
+
+          <div class="space-y-4">
+            <article class="rounded-3xl neon-panel p-6 ring-1 ring-white/5 hover-glow transition-transform">
+              <div class="flex items-center justify-between gap-4 text-zinc-400 sm:flex-row sm:items-start">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-neon font-bold">1</span>
+                <div>
+                  <h3 class="text-xl font-semibold neon-text-pink">Days 1–7: Fire up the first streak</h3>
+                  <p class="mt-3 leading-7 text-zinc-300">Secure the first wins with daily rituals, fast feedback, and a clear sense that the streak is real.</p>
+                </div>
+              </div>
+            </article>
+            <article class="rounded-3xl neon-panel p-6 ring-1 ring-white/5 hover-glow transition-transform">
+              <div class="flex items-center justify-between gap-4 text-zinc-400 sm:flex-row sm:items-start">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-neon font-bold">2</span>
+                <div>
+                  <h3 class="text-xl font-semibold neon-text-cyan">Days 8–21: Shift the signal</h3>
+                  <p class="mt-3 leading-7 text-zinc-300">Turn momentum into routine. Make daily checks feel natural, not forced.</p>
+                </div>
+              </div>
+            </article>
+            <article class="rounded-3xl neon-panel p-6 ring-1 ring-white/5 hover-glow transition-transform">
+              <div class="flex items-center justify-between gap-4 text-zinc-400 sm:flex-row sm:items-start">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-neon font-bold">3</span>
+                <div>
+                  <h3 class="text-xl font-semibold neon-text-pink">Days 22–35: Lock in the lane</h3>
+                  <p class="mt-3 leading-7 text-zinc-300">Anchor your system with small habits that survive pressure and keep the streak intact.</p>
+                </div>
+              </div>
+            </article>
+            <article class="rounded-3xl neon-panel p-6 ring-1 ring-white/5 hover-glow transition-transform">
+              <div class="flex items-center justify-between gap-4 text-zinc-400 sm:flex-row sm:items-start">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-neon font-bold">4</span>
+                <div>
+                  <h3 class="text-xl font-semibold neon-text-cyan">Days 36–60: Own the dashboard</h3>
+                  <p class="mt-3 leading-7 text-zinc-300">Use your streak data as a navigation system — not a scoreboard.</p>
+                </div>
+              </div>
+            </article>
+            <article class="rounded-3xl neon-panel p-6 ring-1 ring-white/5 hover-glow transition-transform">
+              <div class="flex items-center justify-between gap-4 text-zinc-400 sm:flex-row sm:items-start">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-neon font-bold">5</span>
+                <div>
+                  <h3 class="text-xl font-semibold neon-text-pink">Days 61–90: Ride the fast lane</h3>
+                  <p class="mt-3 leading-7 text-zinc-300">The streak becomes identity. Keep the app feeling like your nightly control center.</p>
+                </div>
+              </div>
+            </article>
+            <article class="rounded-3xl neon-panel p-6 ring-1 ring-white/5 hover-glow transition-transform">
+              <div class="flex items-center justify-between gap-4 text-zinc-400 sm:flex-row sm:items-start">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-neon font-bold">6</span>
+                <div>
+                  <h3 class="text-xl font-semibold neon-text-cyan">Beyond 90: Keep the cruise</h3>
+                  <p class="mt-3 leading-7 text-zinc-300">Long-term rhythm is the real win. SeedGuard becomes the streak engine for the habits you want to keep.</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="mt-12 grid gap-6 lg:grid-cols-2">
+          <div class="rounded-3xl neon-panel p-8">
+            <h2 class="text-2xl font-bold neon-text-pink">How to use this page</h2>
+            <ul class="mt-5 space-y-4 text-zinc-300 text-sm leading-7">
+              <li class="rounded-2xl border border-white/10 bg-white/5 p-4">Open the page as a quick reference for your next streak phase.</li>
+              <li class="rounded-2xl border border-white/10 bg-white/5 p-4">Follow the phase cues, then close the page and return to the tracker.</li>
+              <li class="rounded-2xl border border-white/10 bg-white/5 p-4">Keep the language short, sharp, and aligned with the app’s dark neon pulse.</li>
+            </ul>
+          </div>
+          <div class="rounded-3xl neon-panel p-8 bg-[#090c18] border border-cyan-200/10">
+            <h2 class="text-2xl font-bold neon-text-cyan">Why it works</h2>
+            <p class="mt-4 text-zinc-300 leading-7">Users do not need another long essay. They need a high-end companion that explains the rhythm behind the streak, with language that feels like SeedGuard’s dashboard and night drive energy.</p>
+            <div class="mt-6 space-y-3 text-sm text-zinc-400 leading-6">
+              <p>Neon aesthetic. Dark glass surfaces. Punchy phrases.</p>
+              <p>No soft tones, no pale panels, no wasted paragraphs.</p>
+              <p>Just fast, convincing guidance that matches the app’s mood.</p>
+            </div>
+          </div>
+        </section>
+
+        <footer class="mt-14 border-t border-white/10 pt-8 text-zinc-500">
+          <p class="text-sm uppercase tracking-[0.35em] text-zinc-600">SeedGuard Extended Page</p>
+          <p class="mt-4 max-w-2xl text-sm leading-6">Designed to match the home dashboard with late-night Miami synthcity vibes, polished for compact reading and strong motivation.</p>
+        </footer>
+      </main>
     </div>
-
-    <div class="mt-10 flex justify-center">
-      <div class="w-full md:w-3/4 lg:w-2/3 bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.03)] rounded-2xl p-6 text-center shadow-soft-glow">
-        <h4 class="text-2xl font-semibold text-slate-100">Beyond 90 Days</h4>
-        <p class="mt-3 text-slate-300">
-          The streak is no longer the goal. Retention becomes your identity — a disciplined, grounded, self-improving man focused on purpose, growth, health, and legacy.
-        </p>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-</body>
+  </body>
 </html>
