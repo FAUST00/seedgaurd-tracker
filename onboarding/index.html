@@ -45,6 +45,7 @@
     const loginTab = document.getElementById('loginTab');
     const signupTab = document.getElementById('signupTab');
     const authContent = document.getElementById('authContent');
+    const apiBase = '/api';
 
     function getAccounts() {
       try { return JSON.parse(localStorage.getItem(storageKey) || '[]'); }
@@ -68,6 +69,42 @@
 
     function setLoggedIn(email) {
       localStorage.setItem(currentUserKey, email);
+    }
+
+    async function callApi(path, payload) {
+      try {
+        const response = await fetch(path, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          return { error: data.error || 'Server error' };
+        }
+        return data;
+      } catch (error) {
+        return { error: error.message || 'Network error', networkError: true };
+      }
+    }
+
+    function fallbackLogin(email, password) {
+      const accounts = getAccounts();
+      const account = accounts.find((item) => item.email === email);
+      if (!account) return { error: 'No local account found for that email.' };
+      if (account.password !== hashPassword(password)) return { error: 'Incorrect password. Please try again.' };
+      return { success: true, user: account };
+    }
+
+    function fallbackSignup(name, email, password, goalDays) {
+      const accounts = getAccounts();
+      if (accounts.find((item) => item.email === email)) {
+        return { error: 'A local account with that email already exists.' };
+      }
+      const newAccount = { name, email, password: hashPassword(password), goalDays, createdAt: new Date().toISOString() };
+      accounts.push(newAccount);
+      saveAccounts(accounts);
+      return { success: true, user: newAccount };
     }
 
     function renderAuth(mode = 'login') {
@@ -110,43 +147,48 @@
       form.addEventListener('submit', isLogin ? handleLogin : handleSignup);
     }
 
-    function handleLogin(event) {
+    async function handleLogin(event) {
       event.preventDefault();
       const email = document.getElementById('loginEmail').value.trim().toLowerCase();
       const password = document.getElementById('loginPassword').value;
-      const accounts = getAccounts();
-      const account = accounts.find(item => item.email === email);
-      if (!account) {
-        setStatus('No account found for that email.', 'error');
-        return;
+
+      const result = await callApi(`${apiBase}/login`, { email, password });
+      if (result.networkError) {
+        const fallback = fallbackLogin(email, password);
+        if (fallback.error) return setStatus(fallback.error, 'error');
+        setLoggedIn(email);
+        setStatus('Login successful (local fallback). Redirecting...', 'info');
+        return setTimeout(() => { window.location.href = '/seedgaurd-tracker/dashboard/'; }, 800);
       }
-      if (account.password !== hashPassword(password)) {
-        setStatus('Incorrect password. Please try again.', 'error');
-        return;
-      }
-      setLoggedIn(email);
+      if (result.error) return setStatus(result.error, 'error');
+
+      setLoggedIn(result.user.email);
       setStatus('Login successful! Redirecting...', 'info');
       setTimeout(() => { window.location.href = '/seedgaurd-tracker/dashboard/'; }, 800);
     }
 
-    function handleSignup(event) {
+    async function handleSignup(event) {
       event.preventDefault();
       const name = document.getElementById('signupName').value.trim();
       const email = document.getElementById('signupEmail').value.trim().toLowerCase();
       const password = document.getElementById('signupPassword').value;
       const goalDays = parseInt(document.getElementById('signupGoal').value, 10) || 90;
+
       if (!name || !email || !password) {
-        setStatus('Please fill in all fields before continuing.', 'error');
+        return setStatus('Please fill in all fields before continuing.', 'error');
+      }
+
+      const result = await callApi(`${apiBase}/signup`, { name, email, password, goalDays });
+      if (result.networkError) {
+        const fallback = fallbackSignup(name, email, password, goalDays);
+        if (fallback.error) return setStatus(fallback.error, 'error');
+        setStatus('Account created locally. You can now log in.', 'info');
+        loginTab.click();
         return;
       }
-      const accounts = getAccounts();
-      if (accounts.find(item => item.email === email)) {
-        setStatus('An account with that email already exists.', 'error');
-        return;
-      }
-      accounts.push({ name, email, password: hashPassword(password), goalDays, createdAt: new Date().toISOString() });
-      saveAccounts(accounts);
-      setStatus('Account created. You can now log in.', 'info');
+      if (result.error) return setStatus(result.error, 'error');
+
+      setStatus('Account created! Please sign in.', 'info');
       loginTab.click();
     }
 
