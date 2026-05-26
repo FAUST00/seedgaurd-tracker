@@ -61,10 +61,15 @@ function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
 }
 
+function normalizeUsername(username) {
+  return String(username || '').trim().toLowerCase();
+}
+
 function publicUser(user) {
   return {
     id: user.id,
     name: user.name,
+    username: user.username,
     email: user.email,
     goalDays: user.goalDays,
     createdAt: user.createdAt,
@@ -75,6 +80,7 @@ function getStarterProfile(user) {
   return {
     userId: user.id,
     name: user.name,
+    username: user.username,
     email: user.email,
     goalDays: user.goalDays,
     createdAt: user.createdAt,
@@ -89,21 +95,26 @@ app.get('/api/health', (req, res) => {
 });
 
 app.post('/api/signup', async (req, res) => {
-  const { name, email, password, goalDays } = req.body;
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: 'Name, email, and password are required.' });
+  const { name, username, email, password, goalDays } = req.body;
+  if (!name || !username || !email || !password) {
+    return res.status(400).json({ error: 'Name, username, email, and password are required.' });
   }
 
   const normalizedEmail = normalizeEmail(email);
+  const normalizedUsername = normalizeUsername(username);
   const users = await loadUsers();
   if (users.some((user) => user.email === normalizedEmail)) {
     return res.status(409).json({ error: 'An account with that email already exists.' });
+  }
+  if (users.some((user) => user.username === normalizedUsername)) {
+    return res.status(409).json({ error: 'That username is already taken.' });
   }
 
   const passwordHash = bcrypt.hashSync(password, 10);
   const newUser = {
     id: Date.now().toString(),
     name: String(name).trim(),
+    username: normalizedUsername,
     email: normalizedEmail,
     passwordHash,
     goalDays: Number(goalDays) || 90,
@@ -124,16 +135,16 @@ app.post('/api/signup', async (req, res) => {
 });
 
 app.post('/api/login', async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required.' });
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required.' });
   }
 
-  const normalizedEmail = normalizeEmail(email);
+  const normalizedUsername = normalizeUsername(username);
   const users = await loadUsers();
-  const account = users.find((user) => user.email === normalizedEmail);
+  const account = users.find((user) => user.username === normalizedUsername);
   if (!account) {
-    return res.status(404).json({ error: 'No account found for that email.' });
+    return res.status(404).json({ error: 'No account found for that username.' });
   }
 
   const passwordMatches = bcrypt.compareSync(password, account.passwordHash);
@@ -170,6 +181,7 @@ app.post('/api/profile/:userId', async (req, res) => {
     ...req.body,
     userId: account.id,
     email: account.email,
+    username: account.username,
     name: req.body.name || currentProfile.name || account.name,
     goalDays: Number(req.body.goalDays || req.body.goal_days || currentProfile.goalDays || account.goalDays),
     updatedAt: new Date().toISOString(),

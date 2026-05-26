@@ -30,6 +30,14 @@
     status.classList.toggle("error", Boolean(isError));
   }
 
+  function normalizeUsername(username) {
+    return String(username || "").trim().toLowerCase();
+  }
+
+  function normalizeEmail(email) {
+    return String(email || "").trim().toLowerCase();
+  }
+
   function setProfile(user) {
     const goalDays = Number(user.goalDays || user.goal_days || 90);
     const createdAt = user.createdAt || user.created_at || new Date().toISOString();
@@ -38,6 +46,7 @@
       JSON.stringify({
         user_id: user.id || user.email || "guest",
         name: user.name || "Guest",
+        username: user.username || "",
         email: user.email || "",
         goal_days: goalDays,
         created_at: createdAt,
@@ -62,14 +71,18 @@
     }
   }
 
-  function localSignup(name, email, password, goalDays) {
+  function localSignup(name, username, email, password, goalDays) {
     const accounts = getAccounts();
     if (accounts.some((account) => account.email === email)) {
-      return { error: "That email already has a local SeedGuard account." };
+      return { error: "That email is already connected to a SeedGuard account." };
+    }
+    if (accounts.some((account) => account.username === username)) {
+      return { error: "That username is already taken." };
     }
     const account = {
       id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
       name,
+      username,
       email,
       password: encodePassword(password),
       goalDays,
@@ -80,9 +93,9 @@
     return { user: account };
   }
 
-  function localLogin(email, password) {
-    const account = getAccounts().find((item) => item.email === email);
-    if (!account) return { error: "No local account was found for that email." };
+  function localLogin(username, password) {
+    const account = getAccounts().find((item) => item.username === username);
+    if (!account) return { error: "No local account was found for that username." };
     if (account.password !== encodePassword(password)) {
       return { error: "Incorrect password. Please try again." };
     }
@@ -96,7 +109,7 @@
     form.innerHTML = isSignup
       ? `
         <div class="goal-title">
-          <div class="goal-icon" aria-hidden="true">◎</div>
+          <div class="goal-icon" aria-hidden="true">O</div>
           <div>
             <h2>Set Your Goal</h2>
             <p>Create an account or start privately on this device.</p>
@@ -110,6 +123,10 @@
           <div class="field">
             <label for="signupEmail">Email</label>
             <input id="signupEmail" type="email" autocomplete="email" required placeholder="you@example.com" />
+          </div>
+          <div class="field">
+            <label for="signupUsername">Username</label>
+            <input id="signupUsername" autocomplete="username" required placeholder="Choose a username" />
           </div>
           <div class="field">
             <label for="signupPassword">Password</label>
@@ -127,7 +144,7 @@
       `
       : `
         <div class="goal-title">
-          <div class="goal-icon" aria-hidden="true">↗</div>
+          <div class="goal-icon" aria-hidden="true">IN</div>
           <div>
             <h2>Welcome Back</h2>
             <p>Sign in to restore your saved SeedGuard profile.</p>
@@ -135,8 +152,8 @@
         </div>
         <div class="form-grid">
           <div class="field">
-            <label for="loginEmail">Email</label>
-            <input id="loginEmail" type="email" autocomplete="email" required placeholder="you@example.com" />
+            <label for="loginUsername">Username</label>
+            <input id="loginUsername" autocomplete="username" required placeholder="Your username" />
           </div>
           <div class="field">
             <label for="loginPassword">Password</label>
@@ -168,19 +185,20 @@
     setStatus("Saving your SeedGuard profile...", false);
     if (state.mode === "signup") {
       const name = document.getElementById("signupName").value.trim();
-      const email = document.getElementById("signupEmail").value.trim().toLowerCase();
+      const username = normalizeUsername(document.getElementById("signupUsername").value);
+      const email = normalizeEmail(document.getElementById("signupEmail").value);
       const password = document.getElementById("signupPassword").value;
       const goalDays = Number(document.getElementById("signupGoal").value || 90);
-      if (!name || !email || !password) {
-        setStatus("Fill in name, email, and password before continuing.", true);
+      if (!name || !username || !email || !password) {
+        setStatus("Fill in name, username, email, and password before continuing.", true);
         return;
       }
-      const remote = await callApi("/signup", { name, email, password, goalDays });
+      const remote = await callApi("/signup", { name, username, email, password, goalDays });
       if (!remote.networkError && remote.error) {
         setStatus(remote.error, true);
         return;
       }
-      const result = remote.user ? remote : localSignup(name, email, password, goalDays);
+      const result = remote.user ? remote : localSignup(name, username, email, password, goalDays);
       if (result.error) {
         setStatus(result.error, true);
         return;
@@ -189,14 +207,14 @@
       setTimeout(() => goToDashboard({ ...result.user, goalDays }), 450);
       return;
     }
-    const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+    const username = normalizeUsername(document.getElementById("loginUsername").value);
     const password = document.getElementById("loginPassword").value;
-    const remote = await callApi("/login", { email, password });
+    const remote = await callApi("/login", { username, password });
     if (!remote.networkError && remote.error) {
       setStatus(remote.error, true);
       return;
     }
-    const result = remote.user ? remote : localLogin(email, password);
+    const result = remote.user ? remote : localLogin(username, password);
     if (result.error) {
       setStatus(result.error, true);
       return;

@@ -19,8 +19,8 @@ This folder contains a starter backend service for account storage and authentic
 
 ## Available routes
 
-- `POST /api/signup` - create a new account
-- `POST /api/login` - authenticate an existing account
+- `POST /api/signup` - create a new account with one unique email and one unique username
+- `POST /api/login` - authenticate an existing account by username
 - `GET /api/profile/:userId` - load a user's saved streak/profile data
 - `POST /api/profile/:userId` - save a user's streak/profile data
 - `GET /api/health` - check service status
