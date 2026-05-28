@@ -1,8 +1,8 @@
-name: Auto-Update
+name: Auto-Update #1
 on:
   schedule:
-    - cron: '0 */6 * * *' # Every 6 hours. Change as needed.
-  workflow_dispatch: # Adds a manual "Run" button in Actions tab
+    - cron: '0 12 * * *' # 🕒 Change to your timezone/cron
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -17,6 +17,7 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
           fetch-depth: 0
+          persist-credentials: true
 
       - name: Configure Git
         run: |
@@ -25,12 +26,9 @@ jobs:
 
       - name: Run your update logic
         run: |
-          # 👇 REPLACE THIS ENTIRE BLOCK WITH YOUR ACTUAL COMMANDS
-          # Examples:
-          # curl -s https://api.example.com/data > ./data.json
-          # python scripts/generate.py
-          # echo "$(date -u)" > ./VERSION
+          # 👇 REPLACE THIS BLOCK WITH YOUR ACTUAL COMMANDS
           echo "synced" > ./update-marker.txt
+          echo "Updated at: $(date -u)" >> ./update-marker.txt
 
       - name: Detect changes
         id: detect
@@ -38,6 +36,7 @@ jobs:
           git add .
           if git diff --staged --quiet; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected. Skipping PR."
           else
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
@@ -45,10 +44,10 @@ jobs:
       - name: Commit & Push
         if: steps.detect.outputs.has_changes == 'true'
         run: |
-          BRANCH="auto-$(date +%s)"
+          BRANCH="auto-update-${{ github.run_id }}"
           git checkout -b "$BRANCH"
           git commit -m "chore: automated update [skip ci]"
-          git push origin "$BRANCH"
+          git push origin "$BRANCH" || echo "Push failed. Check token permissions."
 
       - name: Create Pull Request
         if: steps.detect.outputs.has_changes == 'true'
@@ -56,7 +55,7 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
           commit-message: "chore: automated update"
-          branch: "auto-$(date +%s)"
+          branch: "auto-update-${{ github.run_id }}"
           title: "Auto-update sync"
           body: "Triggered automatically. Review & merge when ready."
           delete-branch: true
