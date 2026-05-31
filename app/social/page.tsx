@@ -100,84 +100,29 @@ export default function SocialPage() {
     setAddError('');
     setAddSuccess('');
     const raw = codeInput.trim();
-    if (!raw) {
-      setAddError('Paste a friend code first.');
-      return;
-    }
-
+    if (!raw) { setAddError('Paste a friend code first.'); return; }
     let payload: FriendCodePayload;
-    try {
-      payload = JSON.parse(atob(raw));
-    } catch {
-      setAddError('Invalid code â€” make sure you copied the full code.');
-      return;
-    }
-
-    if (!payload.id || !payload.username || typeof payload.streak !== 'number') {
-      setAddError('Code is corrupted or from an incompatible version.');
-      return;
-    }
-
-    if (account && payload.id === account.id) {
-      setAddError("That's your own code! Share it with someone else.");
-      return;
-    }
-
+    try { payload = JSON.parse(atob(raw)); }
+    catch { setAddError('Invalid code â€” make sure you copied the full code.'); return; }
+    if (!payload.id || !payload.username || typeof payload.streak !== 'number') { setAddError('Code is corrupted or from an incompatible version.'); return; }
+    if (account && payload.id === account.id) { setAddError("That's your own code! Share it with someone else."); return; }
     const existing = friends.find((f) => f.id === payload.id);
     if (existing) {
-      const updated = friends.map((f) =>
-        f.id === payload.id
-          ? { ...f, streak: payload.streak, streakStart: payload.streakStart, lastUpdated: payload.shared }
-          : f
-      );
-      saveFriends(updated);
-      setCodeInput('');
-      setAddSuccess(`Updated ${payload.username}'s streak to ${payload.streak} days.`);
-      return;
+      const updated = friends.map((f) => f.id === payload.id ? { ...f, streak: payload.streak, streakStart: payload.streakStart, lastUpdated: payload.shared } : f);
+      saveFriends(updated); setCodeInput(''); setAddSuccess(`Updated ${payload.username}'s streak to ${payload.streak} days.`); return;
     }
-
-    const newFriend: Friend = {
-      id: payload.id,
-      username: payload.username,
-      isAnonymous: payload.isAnonymous ?? false,
-      streak: payload.streak,
-      streakStart: payload.streakStart,
-      lastUpdated: payload.shared,
-      addedAt: new Date().toISOString(),
-      color: randomFriendColor(),
-    };
-
-    saveFriends([...friends, newFriend]);
-    setCodeInput('');
-    setAddSuccess(`Added ${payload.username} (${payload.streak} days) to your leaderboard!`);
+    const newFriend: Friend = { id: payload.id, username: payload.username, isAnonymous: payload.isAnonymous ?? false, streak: payload.streak, streakStart: payload.streakStart, lastUpdated: payload.shared, addedAt: new Date().toISOString(), color: randomFriendColor() };
+    saveFriends([...friends, newFriend]); setCodeInput(''); setAddSuccess(`Added ${payload.username} (${payload.streak} days) to your leaderboard!`);
     setTimeout(() => setAddSuccess(''), 4000);
   };
 
-  const handleRemoveFriend = (id: string) => {
-    saveFriends(friends.filter((f) => f.id !== id));
-  };
+  const handleRemoveFriend = (id: string) => { saveFriends(friends.filter((f) => f.id !== id)); };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Shield className="w-8 h-8 text-primary animate-bounce-subtle neon-text-pink" />
-      </div>
-    );
-  }
+  if (loading) return (<div className="flex items-center justify-center min-h-screen"><Shield className="w-8 h-8 text-primary animate-bounce-subtle neon-text-pink" /></div>);
 
   const myStreak = getMyStreak();
-  const leaderboard: Array<{
-    id: string;
-    username: string;
-    isAnonymous: boolean;
-    streak: number;
-    color: string;
-    isMe: boolean;
-    lastUpdated?: string;
-  }> = [
-    ...(account
-      ? [{ id: account.id, username: account.username, isAnonymous: account.isAnonymous, streak: myStreak, color: account.color, isMe: true }]
-      : []),
+  const leaderboard: Array<{ id: string; username: string; isAnonymous: boolean; streak: number; color: string; isMe: boolean; lastUpdated?: string; }> = [
+    ...(account ? [{ id: account.id, username: account.username, isAnonymous: account.isAnonymous, streak: myStreak, color: account.color, isMe: true }] : []),
     ...friends.map((f) => ({ ...f, isMe: false })),
   ].sort((a, b) => b.streak - a.streak);
 
@@ -198,32 +143,71 @@ export default function SocialPage() {
           <Shield className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="font-medium text-primary mb-1">You need an account to share your streak</p>
-            <p className="text-sm text-muted-foreground mb-3">Create one (anonymous is fine) to generate a friend code others can add.</p>
-            <Link href="/account" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/20 border border-primary/40 text-primary text-sm font-medium hover:bg-primary/30 transition-all neon-text-pink">Create Account</Link>
+            <p className="text-sm text-muted-foreground mb-3">
+              Create one (anonymous is fine) to generate a friend code others can add.
+            </p>
+            <Link
+              href="/account"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/20 border border-primary/40 text-primary text-sm font-medium hover:bg-primary/30 transition-all neon-text-pink"
+            >
+              Create Account
+            </Link>
           </div>
         </div>
       )}
 
+      {/* â”€â”€ Add Friend â”€â”€ */}
       <div className="rounded-xl border border-secondary/20 bg-background/50 backdrop-blur-sm p-8 space-y-4 animate-scale-in [animation-delay:50ms]">
-        <h2 className="text-lg font-bold uppercase tracking-wider text-secondary neon-text-cyan flex items-center gap-2"><Plus className="w-5 h-5" /> Add a Friend</h2>
-        <p className="text-sm text-muted-foreground">Ask your friend to copy their code from their Account page, then paste it here.</p>
+        <h2 className="text-lg font-bold uppercase tracking-wider text-secondary neon-text-cyan flex items-center gap-2">
+          <Plus className="w-5 h-5" />
+          Add a Friend
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Ask your friend to copy their code from their Account page, then paste it here.
+        </p>
+
         <div className="flex gap-3">
           <div className="flex-1 relative">
             <ClipboardPaste className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input type="text" value={codeInput} onChange={(e)=>{setCodeInput(e.target.value);setAddError('');}} onKeyDown={(e)=>e.key==='Enter'&&handleAddFriend()} placeholder="Paste friend code hereâ€¦" className="w-full pl-10 pr-4 py-3 rounded-lg border border-muted/30 bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-secondary/50 focus:ring-1 focus:ring-secondary/30 transition-all text-sm font-mono"/>
+            <input
+              type="text"
+              value={codeInput}
+              onChange={(e) => {
+                setCodeInput(e.target.value);
+                setAddError('');
+              }}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddFriend()}
+              placeholder="Paste friend code hereâ€¦"
+              className="w-full pl-10 pr-4 py-3 rounded-lg border border-muted/30 bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-secondary/50 focus:ring-1 focus:ring-secondary/30 transition-all text-sm font-mono"
+            />
           </div>
-          <button onClick={handleAddFriend} className="px-5 py-3 rounded-lg border border-secondary/50 text-secondary bg-secondary/10 hover:bg-secondary/20 transition-all font-bold uppercase tracking-wider text-sm whitespace-nowrap">Add</button>
+          <button
+            onClick={handleAddFriend}
+            className="px-5 py-3 rounded-lg border border-secondary/50 text-secondary bg-secondary/10 hover:bg-secondary/20 transition-all font-bold uppercase tracking-wider text-sm whitespace-nowrap"
+          >
+            Add
+          </button>
         </div>
+
         {addError && <p className="text-sm text-destructive">{addError}</p>}
         {addSuccess && <p className="text-sm text-secondary neon-text-cyan">{addSuccess}</p>}
       </div>
 
+      {/* â”€â”€ Leaderboard â”€â”€ */}
       <div className="rounded-xl border border-primary/20 bg-background/50 backdrop-blur-sm p-8 space-y-4 animate-scale-in [animation-delay:100ms]">
-        <h2 className="text-lg font-bold uppercase tracking-wider text-primary neon-text-pink flex items-center gap-2"><Trophy className="w+yØ§sR‚ÓR"óâ7G&V²ÆVFW&&ö&CÂöƒ#à¢¶ÆVFW&&ö&BæÆVæwF‚ÓÓÒbb€¢ÆF—b6Æ74æÖSÒ'FW‡BÖ6VçFW"’ÓFW‡BÖ×WFVBÖf÷&Vw&÷VæBFW‡B×6Ò&÷&FW"&÷&FW"ÖF6†VB&÷&FW"Ö×WFVBó3&÷VæFVB×†Â#à¢Äv†÷7B6Æ74æÖSÒ'r·Šw5 h-8 mx-auto mb-3 opacity-40" />
+        <h2 className="text-lg font-bold uppercase tracking-wider text-primary neon-text-pink flex items-center gap-2">
+          <Trophy className="w-5 h-5" />
+          Streak Leaderboard
+        </h2>
+
+        {leaderboard.length === 0 && (
+          <div className="text-center py-10 text-muted-foreground text-sm border border-dashed border-muted/30 rounded-xl">
+            <Ghost className="w-8 h-8 mx-auto mb-3 opacity-40" />
             <p>No one on the board yet.</p>
             <p className="mt-1 text-xs">Create an account and add friends using their codes.</p>
           </div>
         )}
+
         {leaderboard.length > 0 && (
           <div className="space-y-3">
             {leaderboard.map((entry, rank) => {
@@ -249,7 +233,11 @@ export default function SocialPage() {
                     {!entry.isMe && friend && <p className="text-xs text-muted-foreground mt-0.5">Added {formatDate(friend.addedAt)}</p>}
                   </div>
                   <div className="flex-shrink-0 text-right"><p className={`text-2xl font-extrabold ${rankStyle.text}`}>{entry.streak}</p><p className="text-xs text-muted-foreground uppercase tracking-wider">days</p></div>
-                  {!entry.isMe && <button onClick={()=>handleRemoveFriend(entry.id)} className="flex-shrink-0 p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-all" title="Remove friend"><Trash2 className="userTypes h-4"/></button>}
+                  {!entry.isMe && (
+                    <button onClick={() => handleRemoveFriend(entry.id)} className="flex-shrink-0 p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-all" title="Remove friend">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               );
             })}
@@ -260,8 +248,8 @@ export default function SocialPage() {
         <h3 className="font-bold uppercase tracking-wider text-foreground text-xs">How Friend Codes Work</h3>
         <ol className="list-decimal list-inside space-y-2 leading-relaxed">
           <li>You (or a friend) go to <strong className="text-foreground">Account</strong> and copy a Friend Code.</li>
-          <li>The other person pastes it here under &quot;Add a Friend.&quot;</li>
-          <li>The code captures your streak at that moment - to update it, share a fresh code.</li>
+          <li>The other person pastes it here under &ldquo;Add a Friend.&rdquo;</li>
+          <li>The code captures your streak at that moment â€” to update it, share a fresh code.</li>
           <li>All data stays on each person&rsquo;s device. Nothing is sent to a server.</li>
         </ol>
       </div>
