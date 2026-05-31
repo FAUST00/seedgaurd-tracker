@@ -17,7 +17,6 @@ export default function History() {
   const [entryType, setEntryType] = useState<'victory' | 'relapse'>('victory');
 
   useEffect(() => {
-    // Load history from localStorage
     const loadHistory = () => {
       try {
         const saved = localStorage.getItem('seedguard_history');
@@ -30,25 +29,24 @@ export default function History() {
         setLoading(false);
       }
     };
-
     loadHistory();
   }, []);
 
   const addEntry = () => {
-    if (!newNote.trim() && entryType === 'victory') {
-      return;
-    }
-
-    const newEntry: HistoryEntry = {
-      id: Date.now().toString(),
-      date: new Date().toLocaleString(),
-      type: entryType,
-      note: newNote,
-    };
-
+    if (!newNote.trim() && entryType === 'victory') return;
+    const newEntry: HistoryEntry = { id: Date.now().toString(), date: new Date().toLocaleString(), type: entryType, note: newNote };
     const updated = [newEntry, ...entries];
     setEntries(updated);
     localStorage.setItem('seedguard_history', JSON.stringify(updated));
+    if (entryType === 'relapse') {
+      const now = new Date().toISOString();
+      localStorage.setItem('seedguard_streak_start', now);
+      try {
+        const saved = localStorage.getItem('seedguard_stats');
+        const stats = saved ? JSON.parse(saved) : {};
+        localStorage.setItem('seedguard_stats', JSON.stringify({ ...stats, currentStreak: 0, relapses: (stats.relapses || 0) + 1 }));
+      } catch {}
+    }
     setNewNote('');
   };
 
@@ -58,184 +56,29 @@ export default function History() {
     localStorage.setItem('seedguard_history', JSON.stringify(updated));
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-bounce-subtle text-primary neon-text-pink">
-          <ShieldCheck className="w-8 h-8" />
-        </div>
-      </div>
-    );
-  }
+  if (loading) return (<div className="flex items-center justify-center min-h-screen"><div className="animate-bounce-subtle text-primary neon-text-pink"><ShieldCheck className="w-8 h-8" /></div></div>);
 
   const victories = entries.filter((e) => e.type === 'victory');
   const relapses = entries.filter((e) => e.type === 'relapse');
 
   return (
     <div className="container mx-auto p-4 md:p-8 max-w-6xl space-y-8 page-entry">
-      {/* Header */}
       <div>
-        <h1 className="text-4xl font-extrabold tracking-widest uppercase italic neon-text-cyan text-secondary">
-          History
-        </h1>
-        <p className="text-muted-foreground text-lg mt-2">
-          Review your past relapses and check-ins.
-        </p>
+        <h1 className="text-4xl font-extrabold tracking-widest uppercase italic neon-text-cyan text-secondary">History</h1>
+        <p className="text-muted-foreground text-lg mt-2">Review your past relapses and check-ins.</p>
       </div>
-
-      {/* Add Entry Section */}
-      <div className="rounded-xl border border-primary/20 bg-background/50 backdrop-blur-sm p-6 space-y-4 animate-scale-in">
+      <div className="rounded-xl border border-primary/20 bg-background/50 backdrop-blur-sm p-6 space-y-4">
         <h3 className="font-bold text-lg uppercase tracking-wider">Log New Entry</h3>
-        
         <div className="space-y-4">
           <div className="flex gap-4">
-            <button
-              onClick={() => setEntryType('victory')}
-              className={`
-                flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all
-                ${entryType === 'victory'
-                  ? 'bg-primary/20 text-primary neon-text-pink border border-primary/50'
-                  : 'bg-muted/50 text-muted-foreground border border-muted/50 hover:bg-muted/75'
-                }
-              `}
-            >
-              <ShieldCheck className="w-5 h-5" />
-              Victory
-            </button>
-            <button
-              onClick={() => setEntryType('relapse')}
-              className={`
-                flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all
-                ${entryType === 'relapse'
-                  ? 'bg-destructive/20 text-destructive border border-destructive/50'
-                  : 'bg-muted/50 text-muted-foreground border border-muted/50 hover:bg-muted/75'
-                }
-              `}
-            >
-              <Flame className="w-5 h-5" />
-              Relapse
-            </button>
-          </div>
+            <button onClick={() => setEntryType('victory')} className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all ${entryType==='victory'?'bg-primary/20 text-primary neon-text-pink border border-primary/50':'bg-muted/50 text-muted-foreground border border-muted/50'}`}><ShieldCheck className="w-5 h-5"/> Victory</button>
+            <button onClick={() => setEntryType('relapse')} className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all ${entryType==='relapse'?'bg-destructive/20 text-destructive border border-destructive/50':'bg-muted/50 text-muted-foreground border border-muted/50'}`}><Flame className="w%ÕÍ•ÉQåÁ•Ì ´Ôˆ¼øI•±…ÁÍ”ð½‰ÕÑÑ½¸ø(€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€ñÑ•áÑ…É•„Ù…±Õ”õí¹•Ý9½Ñ•ô½¹¡…¹”õì¡”¤ôùÍ•Ñ9•Ý9½Ñ”¡”¹Ñ…É•Ð¹Ù…±Õ”¥ôÁ±…•¡½±‘•Èõí•¹ÑÉåQåÁ”ôôôÙ¥Ñ½Éäœü]É¥Ñ”…‰½ÕÐå½ÕÈÙ¥Ñ½Éä¸¸¸œè]¡…Ð±•Ñ¼Ñ¡¥ÌÉ•±…ÁÍ”üô±…ÍÍ9…µ”ô‰Üµ™Õ±°É½Õ¹‘•µ±œ‰½É‘•È‰½É‘•ÈµµÕÑ•¼ÌÀ‰œµ‰…­É½Õ¹¼ÔÀÁà´ÐÁä´ÌÑ•áÐµ™½É•É½Õ¹Á±…•¡½±‘•ÈéÑ•áÐµµÕÑ•µ™½É•É½Õ¹™½ÕÌé½ÕÑ±¥¹”µ¹½¹”™½ÕÌé‰½É‘•ÈµÁÉ¥µ…Éä¼ÔÀÑÉ…¹Í¥Ñ¥½¸µ…±°ˆÉ½ÝÌõìÍô¼ø(€€€€€€€€€€ñ‰ÕÑÑ½¸½¹±¥¬õí…‘‘¹ÑÉåô±…ÍÍ9…µ”ô‰Üµ™Õ±°™±•à¥Ñ•µÌµ•¹Ñ•È©ÕÍÑ¥™äµ•¹Ñ•È…À´ÈÁà´ØÁä´Ì‰œµÁÉ¥µ…Éä¼ÈÀÑ•áÐµÁÉ¥µ…Éä‰½É‘•È‰½É‘•ÈµÁÉ¥µ…Éä¼ÔÀÉ½Õ¹‘•µ±œ¡½Ù•Èé‰œµÁÉ¥µ…Éä¼ÌÀÑÉ…¹Í¥Ñ¥½¸µ…±°™½¹Ðµµ•‘¥Õ´ÕÁÁ•É…Í”ÑÉ…­¥¹œµÝ¥‘•ÈˆøñA±ÕÌ±…ÍÍ9…µ”ô‰Ü—W6W%G—W2‚ÓR"óâÆörVçG'“Âö'WGFöãà¢ÂöF—cà¢ÂöF—cà¢ÆF—b6Æ74æÖSÒ&w&–Bw&–BÖ6öÇ2ÓÆs¦w&–BÖ6öÇ2Ó"vÓ‚#à¢ÆF—b6Æ74æÖSÒ'76R×’ÓB#ãÆƒ"6Æ74æÖSÒ'FW‡B×†ÂföçBÖ&öÆBWW&66RG&6¶–ær×v–FW7BfÆW‚—FV×2Ö6VçFW"vÓ"FW‡B×6V6öæF'’æVöâ×FW‡BÖ7–â#ãÅ6†–VÆD6†V6²6Æ74æÖSÒ'r]\Ù\•\\ÈMˆ‹ÏˆšXÝÜšY\È	˜[\È›Ý\ÏáØøð¾œŠÝšXÝÜšY\Ë›[™ÝOOLÊ]ˆÛ\ÜÓ˜[YOH^\ÛH^[]]YY›Ü™YÜ›Ý[™][XÈ›Ü™\ˆ›Ü™\‹Y\ÚY›Ü™\‹[]]YÍL›Ý[™Y[ÈMˆ^XÙ[\ˆ“›ÈÚ[œÈÜˆ›Ý\ÈÙÙÙYY]ÜÜ[Ù]ŠNŠ]ˆÛ\ÜÓ˜[YOHœÜXÙK^KLÈžÝšXÝÜšY\Ë›X\
 
-          <textarea
-            value={newNote}
-            onChange={(e) => setNewNote(e.target.value)}
-            placeholder={entryType === 'victory' ? 'Write about your victory...' : 'What led to this relapse?'}
-            className="w-full rounded-lg border border-muted/30 bg-background/50 px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all"
-            rows={3}
-          />
-
-          <button
-            onClick={addEntry}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary/20 text-primary border border-primary/50 rounded-lg hover:bg-primary/30 transition-all font-medium uppercase tracking-wider"
-          >
-            <Plus className="w-5 h-5" />
-            Log Entry
-          </button>
-        </div>
+JOOŠ]ˆÙ^O^ÙKšYHÛ\ÜÓ˜[YOHœ›Ý[™Y[È›Ü™\ˆ›Ü™\‹\ÙXÛÛ™\žKÌŒ™ËX˜XÚÙÜ›Ý[™ÍLMÜ›Ý\]ˆÛ\ÜÓ˜[YOH™›^][\Ë\Ý\\ÝYžKX™]ÙY[ˆØ\M]ˆÛ\ÜÓ˜[YOH™›^LHÛ\ÜÓ˜[YOH^^È^[]]YY›Ü™YÜ›Ý[™X‹LˆžÙK™]_OÜÛ\ÜÓ˜[YOH^Y›Ü™YÜ›Ý[™žÙK››Ý_OÜÙ]]ÛˆÛÛXÚÏ^Ê
+OO™[]Q[žJKšY
+_HÛ\ÜÓ˜[YOH›ÜXÚ]KLÜ›Ý\ZÝ™\Ž›ÜXÚ]KLL˜[œÚ][Û‹[ÜXÚ]HLˆÝ™\Ž˜™ËY\ÝXÝ]™KÌŒ›Ý[™Y^Y\ÝXÝ]™H˜\ÚˆÛ\ÜÓ˜[YOHÉuserTypes h-4"/></button></div></div>)))}</div>))}</div>
+        <div className="space-y-4"><h2 className="text-xl font-bold uppercase tracking-widest flex items-center gap-2 text-destructive"><Flame className=ÉuserTypes h-6"/> Relapse Log</h2>{relapses.length===0?(<div className="text-sm text-muted-foreground italic border border-dashed border-muted/50 rounded-lg p-6 text-center">No relapses logged yet. Keep it up!</div>):([<div className="space-y-3">{relapses.map((e)=>(<div key={e.id} className="rounded-lg border border-destructive/20 bg-background/50 p-4 group"><div className="flex items-start justify-between gap-4"><div className="flex-1"><p className="text-xs text-muted-foreground mb-2">{e.date}</p><p className="text-foreground">{e.note||'Relapse recorded'}</p></div><button onClick={()=>deleteEntry(e.id)} className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-destructive/20 rounded text-destructive"><Trash2 className=ÉuserTypes h-4"/></button></div></div>)))}</div>])}</div>
       </div>
-
-      {/* History Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Victories */}
-        <div className="space-y-4 animate-scale-in">
-          <h2 className="text-xl font-bold uppercase tracking-widest flex items-center gap-2 text-secondary neon-text-cyan">
-            <ShieldCheck className="w-6 h-6" />
-            Victories & Notes
-          </h2>
-
-          {victories.length === 0 ? (
-            <div className="text-sm text-muted-foreground italic border border-dashed border-muted/50 rounded-lg p-6 text-center">
-              No wins or notes logged yet. Start your journey today!
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {victories.map((entry) => (
-                <div
-                  key={entry.id}
-                  className="rounded-lg border border-secondary/20 bg-background/50 p-4 hover:border-secondary/50 transition-all group"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <p className="text-xs text-muted-foreground mb-2">{entry.date}</p>
-                      <p className="text-foreground">{entry.note}</p>
-                    </div>
-                    <button
-                      onClick={() => deleteEntry(entry.id)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-destructive/20 rounded text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Relapses */}
-        <div className="space-y-4 animate-scale-in [animation-delay:100ms]">
-          <h2 className="text-xl font-bold uppercase tracking-widest flex items-center gap-2 text-destructive">
-            <Flame className="w-6 h-6" />
-            Relapse Log
-          </h2>
-
-          {relapses.length === 0 ? (
-            <div className="text-sm text-muted-foreground italic border border-dashed border-muted/50 rounded-lg p-6 text-center">
-              No relapses logged yet. Keep it up!
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {relapses.map((entry) => (
-                <div
-                  key={entry.id}
-                  className="rounded-lg border border-destructive/20 bg-background/50 p-4 hover:border-destructive/50 transition-all group"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <p className="text-xs text-muted-foreground mb-2">{entry.date}</p>
-                      <p className="text-foreground">{entry.note || 'Relapse recorded'}</p>
-                    </div>
-                    <button
-                      onClick={() => deleteEntry(entry.id)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-destructive/20 rounded text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Statistics */}
-      {entries.length > 0 && (
-        <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-secondary/5 backdrop-blur-sm p-8 animate-scale-in [animation-delay:200ms]">
-          <h3 className="font-bold text-lg mb-4 uppercase tracking-wider">Session Stats</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-secondary neon-text-cyan">{victories.length}</p>
-              <p className="text-sm text-muted-foreground mt-1">Victories</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-destructive">{relapses.length}</p>
-              <p className="text-sm text-muted-foreground mt-1">Relapses</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary neon-text-pink">
-                {Math.round((victories.length / entries.length) * 100)}%
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">Success Rate</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-accent">{entries.length}</p>
-              <p className="text-sm text-muted-foreground mt-1">Total Entries</p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
