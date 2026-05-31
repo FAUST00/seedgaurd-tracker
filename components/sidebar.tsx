@@ -11,12 +11,16 @@ import {
   Settings,
   Menu,
   X,
+  Users,
+  User,
 } from 'lucide-react';
 
 const navigationItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/history', label: 'History', icon: History },
   { href: '/benefits', label: 'Benefits', icon: MapPin },
+  { href: '/social', label: 'Social', icon: Users },
+  { href: '/account', label: 'Account', icon: User },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -119,26 +123,26 @@ export function Sidebar() {
 
           {/* Mobile Menu */}
           <nav className="md:hidden fixed left-0 top-16 w-full bg-background/95 backdrop-blur-md border-b border-primary/10 z-40 animate-slide-in-from-top">
-            <div className="p-4 space-y-2 flex gap-2 overflow-x-auto">
+            <div className="p-4 grid grid-cols-3 gap-2">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
-                
+
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsMobileOpen(false)}
                     className={`
-                      flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 whitespace-nowrap flex-shrink-0
+                      flex flex-col items-center gap-1.5 px-2 py-3 rounded-lg transition-all duration-200
                       ${active
-                        ? 'bg-primary/20 text-primary neon-text-pink shadow-lg'
+                        ? 'bg-primary/20 text-primary neon-text-pink'
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                       }
                     `}
                   >
                     <Icon className="w-5 h-5" />
-                    <span className="font-medium">{item.label}</span>
+                    <span className="font-medium text-xs">{item.label}</span>
                   </Link>
                 );
               })}
