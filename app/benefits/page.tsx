@@ -132,7 +132,8 @@ export default function Benefits() {
       <section className="mb-14">
         <div className="flex items-center gap-4 mb-6"><h2 className="text-2xl font-bold uppercase tracking-wider text-secondary neon-text-cyan">Month by Month</h2><div className="flex-1 h-px bg-secondary/20"/><span className="text-xs text-muted-foreground uppercase tracking-widest font-medium whitespace-nowrap">Month 1+</span></div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">{monthBenefits.map((b,i)=>(<BenefitCard key={b.title} benefit={b} delay={i*60}/>))}</div>
-      </section>─────────── */}
+      </section>
+      {/* ─────────── */}
       <section className="mb-14">
         <div className="flex items-center gap-4 mb-8">
           <h2 className="text-2xl font-bold uppercase tracking-wider text-accent">
@@ -156,11 +157,7 @@ export default function Benefits() {
           <div className="rounded-xl border border-secondary/20 bg-background/50 backdrop-blur-sm p-6 hover:border-secondary/40 transition-all animate-scale-in [animation-delay:80ms]">
             <div className="flex items-start gap-5">
               <div className="flex-shrink-0 w-12 h-12 rounded-full bg-secondary/15 flex items-center justify-center font-extrabold text-lg text-secondary neon-text-cyan">2</div>
-              <div className="flex-1 min-w-0"><div className="flex items-center gap-3 mb-2"><h3 className="font-bold text-lg uppercase tracking-wider">Weeks 2–4: Adjustment Phase</h3><span className="text-xs bg-secondary/10 text-secondary px-2 py-0.5 rounded-full uppercase font-semibold tracking-wider">Fog clears</span></div><p className="text-muted-foreground text-sm leading-relaxed mb-4">Urges decrease but flatness and anhedonia may hit hard. You&apos;re on the right path. Exercise and social connection are your best tools here.</p><div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">{'Lower urges,Flatness,Better sleep,Energy returns'.split(',').map(s=>(<div key={s} className="rounded-lg bg-secondary/8 border border-secondary/15 px-3 py-2 text-secondary font-medium">{s}</div>))}</div></div></div></div>er sleep', 'Energy returns'].map((s) => (
-                    <div key={s} className="rounded-lg bg-secondary/8 border border-secondary/15 px-3 py-2 text-secondary font-medium">
-                      {s}
-                    </div>
-                  ))}
+              <div className="flex-1 min-w-0"><div className="flex items-center gap-3 mb-2"><h3 className="font-bold text-lg uppercase tracking-wider">Weeks 2–4: Adjustment Phase</h3><span className="text-xs bg-secondary/10 text-secondary px-2 py-0.5 rounded-full uppercase font-semibold tracking-wider">Fog clears</span></div><p className="text-muted-foreground text-sm leading-relaxed mb-4">Urges decrease but flatness and anhedonia may hit hard. You&apos;re on the right path. Exercise and social connection are your best tools here.</p><div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">{'Lower urges,Flatness,Better sleep,Energy returns'.split(',').map(s=>(<div key={s} className="rounded-lg bg-secondary/8 border border-secondary/15 px-3 py-2 text-secondary font-medium">{s}</div>))}</div></div></div></div>
                 </div>
               </div>
             </div>
