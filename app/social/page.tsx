@@ -218,7 +218,7 @@ export default function SocialPage() {
               return (
                 <div key={entry.id} className={`rounded-xl border ${rankStyle.border} ${rankStyle.bg} backdrop-blur-sm p-4 flex items-center gap-4 transition-all hover:scale-[1.01]`}>
                   <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-extrabold text-sm ${rankStyle.text}`}>
-                    {RankIcon && rank < 3 ? <RankIcon className="w-5 h-5" /> : <span>#{rank + 1}</span>}
+                    {rank < 3 ? <RankIcon className="w-5 h-5" /> : <span>#{rank + 1}</span>}
                   </div>
                   <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-base border-2" style={{backgroundColor:`${entry.color}20`,borderColor:`${entry.color}50`,color:entry.color}}>
                     {entry.isAnonymous?'?':entry.username.charAt(0).toUpperCase()}
