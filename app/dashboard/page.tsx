@@ -24,11 +24,11 @@ function pad(n: number): string {
 
 function getStreakStart(): Date {
   try {
-    const start = localStorage.getItem('seedguard_streak_start');
+    const start = (typeof window!=='undefined'?localStorage:null)?.getItem('seedguard_streak_start');
     if (start) return new Date(start);
 
     // Compatibility: try old relapse keys from legacy HTML version
-    const relapses = JSON.parse(localStorage.getItem('seedguard_relapses') || '[]');
+    const relapses = JSON.parse((typeof window!=='undefined'?localStorage:null)?.getItem('seedguard_relapses') || '[]');
     if (relapses.length > 0) {
       const latest = [...relapses].sort(
         (a: { relapse_time: string }, b: { relapse_time: string }) =>
@@ -39,7 +39,7 @@ function getStreakStart(): Date {
       return d;
     }
 
-    const profile = JSON.parse(localStorage.getItem('seedguard_profile') || 'null');
+    const profile = JSON.parse((typeof window!=='undefined'?localStorage:null)?.getItem('seedguard_profile') || 'null');
     if (profile?.created_at) {
       const d = new Date(profile.created_at);
       localStorage.setItem('seedguard_streak_start', d.toISOString());
@@ -50,14 +50,14 @@ function getStreakStart(): Date {
   const now = new Date().toISOString();
   localStorage.setItem('seedguard_streak_start', now);
   // Also set first-day if not already set
-  if (!localStorage.getItem('seedguard_first_day')) {
+  if (!(typeof window!=='undefined'?localStorage:null)?.getItem('seedguard_first_day')) {
     localStorage.setItem('seedguard_first_day', now);
   }
   return new Date(now);
 }
 
 function getFirstDay(): Date {
-  const stored = localStorage.getItem('seedguard_first_day');
+  const stored = (typeof window!=='undefined'?localStorage:null)?.getItem('seedguard_first_day');
   if (stored) return new Date(stored);
   const now = new Date().toISOString();
   localStorage.setItem('seedguard_first_day', now);
@@ -75,15 +75,18 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [hasAccount, setHasAccount] = useState(false);
 
+  const [showStreakEdit, setShowStreakEdit] = useState(false);
+  const [editDateInput, setEditDateInput] = useState('');
+
   // Load initial stats
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('seedguard_stats');
+      const saved = (typeof window!=='undefined'?localStorage:null)?.getItem('seedguard_stats');
       if (saved) {
         setStats(JSON.parse(saved));
       }
     } catch {}
-    setHasAccount(!!localStorage.getItem('seedguard_account'));
+    setHasAccount(!!(typeof window!=='undefined'?localStorage:null)?.getItem('seedguard_account'));
     setLoading(false);
   }, []);
 
@@ -134,6 +137,15 @@ export default function Dashboard() {
     );
   }
 
+  const handleSaveStreak = () => {
+    if (!editDateInput) return;
+    const d = new Date(editDateInput);
+    if (isNaN(d.getTime())) return;
+    localStorage.setItem('seedguard_streak_start', String(d.getTime()));
+    setShowStreakEdit(false);
+    window.location.reload();
+  };
+  if (typeof window === 'undefined') return null;
   return (
     <div className="container mx-auto p-4 md:p-8 max-w-6xl space-y-8 page-entry">
       {/* Header */}
@@ -165,6 +177,18 @@ export default function Dashboard() {
             Live Streak Timer
           </h2>
         </div>
+          <div style={{display:'flex',alignItems:'center',gap:'12px',marginTop:'8px'}}>
+            <span style={{fontSize:'1.1rem',fontWeight:'bold',color:'#e879f9'}}>Day {timer.days + 1}</span>
+            <button onClick={()=>{setShowStreakEdit(v=>!v);setEditDateInput(start?new Date(Number(start)).toISOString().slice(0,16):'');}} style={{background:'transparent',border:'1px solid #a21caf',borderRadius:'6px',padding:'2px 10px',color:'#e879f9',cursor:'pointer',fontSize:'0.8rem'}}>✏️ Edit Streak</button>
+          </div>
+          {showStreakEdit&&(<div style={{marginTop:'10px',padding:'12px',background:'#1a0a2e',border:'1px solid #7c3aed',borderRadius:'10px'}}>
+            <p style={{color:'#d8b4fe',fontSize:'0.85rem',marginBottom:'8px'}}>Set streak start date &amp; time:</p>
+            <input type="datetime-local" value={editDateInput} onChange={e=>setEditDateInput(e.target.value)} style={{background:'#0f0718',border:'1px solid #7c3aed',borderRadius:'6px',padding:'6px 10px',color:'#f3e8ff',width:'100%',marginBottom:'8px'}} />
+            <div style={{display:'flex',gap:'8px'}}>
+              <button onClick={handleSaveStreak} style={{background:'#7c3aed',border:'none',borderRadius:'6px',padding:'6px 16px',color:'white',cursor:'pointer',fontWeight:600}}>Save</button>
+              <button onClick={()=>setShowStreakEdit(false)} style={{background:'transparent',border:'1px solid #6b7280',borderRadius:'6px',padding:'6px 16px',color:'#9ca3af',cursor:'pointer'}}>Cancel</button>
+            </div>
+          </div>)}
 
         <div className="grid grid-cols-4 gap-2 md:gap-6">
           {(
