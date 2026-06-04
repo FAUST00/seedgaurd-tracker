@@ -2,8 +2,8 @@
 const nextConfig = {
   output: 'export',
   basePath: '/seedgaurd-tracker',
+  assetPrefix: '/seedgaurd-tracker/',
   trailingSlash: true,
-  reactStrictMode: true,
   images: {
     unoptimized: true,
   },
