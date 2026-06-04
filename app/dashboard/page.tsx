@@ -179,7 +179,7 @@ export default function Dashboard() {
         </div>
           <div style={{display:'flex',alignItems:'center',gap:'12px',marginTop:'8px'}}>
             <span style={{fontSize:'1.1rem',fontWeight:'bold',color:'#e879f9'}}>Day {timer.days + 1}</span>
-            <button onClick={()=>{setShowStreakEdit(v=>!v);setEditDateInput(start?new Date(Number(start)).toISOString().slice(0,16):'');}} style={{background:'transparent',border:'1px solid #a21caf',borderRadius:'6px',padding:'2px 10px',color:'#e879f9',cursor:'pointer',fontSize:'0.8rem'}}>✏️ Edit Streak</button>
+            <button onClick={()=>{setShowStreakEdit(v=>!v);setEditDateInput((()=>{const s=localStorage.getItem('seedguard_streak_start');return s?new Date(Number(s)).toISOString().slice(0,16):'';})();}} style={{background:'transparent',border:'1px solid #a21caf',borderRadius:'6px',padding:'2px 10px',color:'#e879f9',cursor:'pointer',fontSize:'0.8rem'}}>✏️ Edit Streak</button>
           </div>
           {showStreakEdit&&(<div style={{marginTop:'10px',padding:'12px',background:'#1a0a2e',border:'1px solid #7c3aed',borderRadius:'10px'}}>
             <p style={{color:'#d8b4fe',fontSize:'0.85rem',marginBottom:'8px'}}>Set streak start date &amp; time:</p>
