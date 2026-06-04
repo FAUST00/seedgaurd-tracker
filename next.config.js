@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  basePath: '/seedgaurd-tracker',
-  assetPrefix: '/seedgaurd-tracker/',
+  basePath: '/seedguard-main',
+  assetPrefix: '/seedguard-main/',
   trailingSlash: true,
   images: {
     unoptimized: true,
