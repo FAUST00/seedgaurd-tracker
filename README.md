@@ -2,7 +2,7 @@
 
 > A modern, privacy-first semen retention / NoFap tracking app. 100% client-side — your data never leaves your device.
 
-**Live:** https://faust00.github.io/seedgaurd-tracker/
+**Live site:** https://faust00.github.io/seedgaurd-tracker/
 
 ---
 
@@ -37,17 +37,17 @@ seedgaurd-tracker/
 ├── app/
 │   ├── dashboard/      # Live streak timer + stats
 │   ├── history/        # Past streak log
-│   ├── benefits/       # Week & month benefit timeline
+│   ├── benefits/       # Week & month timeline
 │   ├── social/         # Community leaderboard
 │   ├── account/        # User profile
 │   ├── settings/       # App preferences
-│   ├── layout.tsx      # Root layout + sidebar
-│   └── globals.css     # Global styles
+│   ├── layout.tsx
+│   └── globals.css
 ├── components/
-│   └── sidebar.tsx     # Navigation sidebar
+│   └── sidebar.tsx
 ├── .github/workflows/
 │   └── deploy.yml      # Auto-deploy to GitHub Pages
-├── next.config.js      # Static export + basePath
+├── next.config.js
 ├── tailwind.config.ts
 └── tsconfig.json
 ```
@@ -60,15 +60,15 @@ seedgaurd-tracker/
 git clone https://github.com/FAUST00/seedgaurd-tracker.git
 cd seedgaurd-tracker
 npm install
-npm run dev        # http://localhost:3000
-npm run build      # Production build → ./out/
+npm run dev        # → http://localhost:3000
+npm run build      # → ./out/ (static export)
 ```
 
 ---
 
 ## Deployment
 
-Auto-deploys to GitHub Pages on every push to `main` via `.github/workflows/deploy.yml`.
+Auto-deploys to GitHub Pages on every push to `main` via GitHub Actions.
 
 ---
 
@@ -77,32 +77,31 @@ Auto-deploys to GitHub Pages on every push to `main` via `.github/workflows/depl
 | Key | Purpose |
 |---|---|
 | `seedguard_streak_start` | Timestamp when current streak began |
-| `seedguard_stats` | Historical stats & relapse log (JSON) |
-| `seedguard_account` | User profile data (JSON) |
+| `seedguard_stats` | Historical stats & relapse log |
+| `seedguard_account` | User profile data |
 
 ---
 
-## Cleanup
+## Repo Cleanup
 
-Run these commands locally to remove stale committed build artifacts:
+Run locally to remove stale committed build artifacts:
 
 ```bash
 git rm -r --cached _next/ _not-found/ 404/ dashboard/ history/ onboarding/ 2>/dev/null
 git rm --cached index.html 404.html retention-journey.html index.txt \
   seedguard-auth.js seedguard-launch.css retention-journey-README.md \
   DEPLOYMENT.md build.bat build.sh \
-  __next.__PAGE__.txt __next._full.txt __next._head.txt __next._index.txt __next._tree.txt \
+  __next.__PAGE__.txt __next._full.txt __next._head.txt \
+  __next._index.txt __next._tree.txt \
   "retention-hero.jpg.jpg" synthwave-city.jpg synthwave-city1.jpg \
   next.svg vercel.svg file.svg globe.svg window.svg 2>/dev/null
 
-# Add to .gitignore
-printf "\nout/\n" >> .gitignore
-
+echo -e "\nout/\n_next/" >> .gitignore
 git add .gitignore README.md
-git commit -m "chore: clean up repo — remove stale build artifacts and old files"
+git commit -m "chore: remove stale build artifacts, clean root dir"
 git push
 ```
 
 ---
 
-*Built with the dark neon cyber aesthetic — because discipline deserves style.*
+*Built with a dark neon cyber aesthetic — because discipline deserves style.*
