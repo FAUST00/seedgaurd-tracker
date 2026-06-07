@@ -233,20 +233,25 @@ api.post('/login', async (req, res) => {
   });
 });
 
-api.get('/profile/:userId', requireAuth, requireProfileOwner, async (req, res) => {
-  const userData = await loadUserData();
-  const profile = userData[req.params.userId];
-  if (!profile) {
-    return res.status(404).json({ error: 'No saved profile found for that user.' });
+api.get('/me', requireAuth, async (req, res) => {
+  const users = await loadUsers();
+  const account = users.find((user) => user.id === req.auth.sub);
+  if (!account) {
+    return res.status(404).json({ error: 'No account found for that session.' });
   }
-  res.json({ profile });
+
+  const userData = await loadUserData();
+  res.json({
+    user: publicUser(account),
+    profile: userData[account.id] || getStarterProfile(account),
+  });
 });
 
-api.post('/profile/:userId', requireAuth, requireProfileOwner, async (req, res) => {
+api.post('/me', requireAuth, async (req, res) => {
   const users = await loadUsers();
-  const account = users.find((user) => user.id === req.params.userId);
+  const account = users.find((user) => user.id === req.auth.sub);
   if (!account) {
-    return res.status(404).json({ error: 'No account found for that user.' });
+    return res.status(404).json({ error: 'No account found for that session.' });
   }
 
   const userData = await loadUserData();
@@ -267,17 +272,7 @@ api.post('/profile/:userId', requireAuth, requireProfileOwner, async (req, res) 
   res.json({ message: 'Profile saved successfully.', profile: nextProfile });
 });
 
-app.use('/api', api);
-
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not found.', path: req.originalUrl });
-});
-
-app.use((error, req, res, next) => {
-  console.error(error);
-  res.status(500).json({ error: 'Server error.' });
-});
-
-app.listen(PORT, () => {
-  console.log(`SeedGuard backend listening on http://localhost:${PORT}`);
-});
+api.get('/profile/:userId', requireAuth, requireProfileOwner, async (req, res) => {
+const userData = await loadUserData();
+  const profile = userData[req.params.userId];
+  if (!profile) {
