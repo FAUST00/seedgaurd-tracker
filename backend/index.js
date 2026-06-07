@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const fs = require('fs/promises');
 const path = require('path');
 
@@ -8,17 +9,38 @@ const DATA_DIR = path.join(__dirname, 'data');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const USER_DATA_FILE = path.join(DATA_DIR, 'user-data.json');
 const PORT = process.env.PORT || 3001;
+const JWT_SECRET = process.env.JWT_SECRET || 'seedguard-dev-secret-change-me';
+const allowedOrigins = [
+  'https://faust00.github.io',
+  'http://localhost:3000',
+  'http://localhost:3001',
+];
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  return /^https:\/\/[a-z0-9-]+\.onrender\.com$/i.test(origin);
+}
 
 app.use(express.json());
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  const origin = req.headers.origin;
+  if (isAllowedOrigin(origin)) {
+    res.header('Access-Control-Allow-Origin', origin || '*');
+  }
+  res.header('Vary', 'Origin');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     return res.sendStatus(204);
+  }
+  if (origin && !isAllowedOrigin(origin)) {
+    return res.status(403).json({ error: 'Origin not allowed by CORS.' });
   }
   next();
 });
+
+const api = express.Router();
 
 async function ensureDataFile() {
   await fs.mkdir(DATA_DIR, { recursive: true });
@@ -90,11 +112,53 @@ function getStarterProfile(user) {
   };
 }
 
-app.get('/api/health', (req, res) => {
+function issueToken(user) {
+  return jwt.sign({ sub: user.id, username: user.username }, JWT_SECRET, { expiresIn: '30d' });
+}
+
+function requireAuth(req, res, next) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) {
+    return res.status(401).json({ error: 'Authentication required.' });
+  }
+
+  try {
+    req.auth = jwt.verify(token, JWT_SECRET);
+    return next();
+  } catch (error) {
+    return res.status(401).json({ error: 'Your session has expired. Please log in again.' });
+  }
+}
+
+function requireProfileOwner(req, res, next) {
+  if (req.auth?.sub !== req.params.userId) {
+    return res.status(403).json({ error: 'You can only access your own profile.' });
+  }
+  return next();
+}
+
+app.get('/', (req, res) => {
+  res.json({
+    name: 'SeedGuard API',
+    status: 'ok',
+    routes: ['/api/health', '/api/signup', '/api/login', '/api/profile/:userId'],
+  });
+});
+
+api.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.post('/api/signup', async (req, res) => {
+api.get('/signup', (req, res) => {
+  res.json({
+    endpoint: '/api/signup',
+    method: 'POST',
+    requiredBody: ['name', 'username', 'email', 'password'],
+  });
+});
+
+api.post('/signup', async (req, res) => {
   const { name, username, email, password, goalDays } = req.body;
   if (!name || !username || !email || !password) {
     return res.status(400).json({ error: 'Name, username, email, and password are required.' });
@@ -131,10 +195,20 @@ app.post('/api/signup', async (req, res) => {
   res.status(201).json({
     message: 'Account created successfully.',
     user: publicUser(newUser),
+    token: issueToken(newUser),
+    profile: userData[newUser.id],
   });
 });
 
-app.post('/api/login', async (req, res) => {
+api.get('/login', (req, res) => {
+  res.json({
+    endpoint: '/api/login',
+    method: 'POST',
+    requiredBody: ['username', 'password'],
+  });
+});
+
+api.post('/login', async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({ error: 'Username and password are required.' });
@@ -155,10 +229,11 @@ app.post('/api/login', async (req, res) => {
   res.json({
     message: 'Login successful.',
     user: publicUser(account),
+    token: issueToken(account),
   });
 });
 
-app.get('/api/profile/:userId', async (req, res) => {
+api.get('/profile/:userId', requireAuth, requireProfileOwner, async (req, res) => {
   const userData = await loadUserData();
   const profile = userData[req.params.userId];
   if (!profile) {
@@ -167,7 +242,7 @@ app.get('/api/profile/:userId', async (req, res) => {
   res.json({ profile });
 });
 
-app.post('/api/profile/:userId', async (req, res) => {
+api.post('/profile/:userId', requireAuth, requireProfileOwner, async (req, res) => {
   const users = await loadUsers();
   const account = users.find((user) => user.id === req.params.userId);
   if (!account) {
@@ -192,8 +267,10 @@ app.post('/api/profile/:userId', async (req, res) => {
   res.json({ message: 'Profile saved successfully.', profile: nextProfile });
 });
 
+app.use('/api', api);
+
 app.use((req, res) => {
-  res.status(404).json({ error: 'Not found.' });
+  res.status(404).json({ error: 'Not found.', path: req.originalUrl });
 });
 
 app.use((error, req, res, next) => {
