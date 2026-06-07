@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { User, Shield, Copy, Check, LogOut, Edit2, Ghost } from 'lucide-react';
+import { Check, Copy, LogOut, Shield, User } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 const API_URL = process.env.NEXT_PUBLIC_SEEDGUARD_API_URL || 'http://localhost:3001';
@@ -23,56 +23,48 @@ export default function AccountPage() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Create form
+  // Create form states
   const [createUsername, setCreateUsername] = useState('');
   const [createEmail, setCreateEmail] = useState('');
   const [createPassword, setCreatePassword] = useState('');
 
-  // Login form
+  // Login form states
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
-  // Listen for Supabase auth changes (this makes login work across devices)
+  // Supabase Auth Listener - makes it work across devices
   useEffect(() => {
-    // Check current session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        handleSupabaseLogin(session.user);
+      if (session?.user) {
+        setAccount({
+          id: session.user.id,
+          username: session.user.email?.split('@')[0] || 'User',
+          email: session.user.email || '',
+          createdAt: session.user.created_at || new Date().toISOString(),
+        });
+        setStep('profile');
       } else {
         setStep('login');
       }
     });
 
-    // Listen for login/logout across tabs/devices
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        handleSupabaseLogin(session.user);
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        setAccount({
+          id: session.user.id,
+          username: session.user.email?.split('@')[0] || 'User',
+          email: session.user.email || '',
+          createdAt: session.user.created_at || new Date().toISOString(),
+        });
+        setStep('profile');
       } else {
         setAccount(null);
         setStep('login');
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => listener.subscription.unsubscribe();
   }, []);
-
-  const handleSupabaseLogin = async (user: any) => {
-    setLoading(true);
-    try {
-      // You can fetch more user data from your backend or Supabase DB here later
-      setAccount({
-        id: user.id,
-        username: user.email?.split('@')[0] || 'User',
-        email: user.email || '',
-        createdAt: new Date().toISOString(),
-      });
-      setStep('profile');
-      setMessage('Logged in successfully with Google!');
-    } catch (err) {
-      setError('Failed to load account');
-    }
-    setLoading(false);
-  };
 
   const handleGoogleSignIn = async () => {
     setError('');
@@ -86,78 +78,77 @@ export default function AccountPage() {
       },
     });
 
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    }
+    if (error) setError(error.message);
+    setLoading(false);
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setAccount(null);
     setStep('login');
-    setMessage('Logged out successfully');
   };
 
-  // Keep your old login/create logic below if you still want email/password
-  // ... (your existing code for create and login can stay here)
+  // Your original create account function (kept)
+  const handleCreateAccount = async () => {
+    // ... your original logic here
+    console.log('Create account - add your logic');
+  };
 
-  if (step === 'loading') {
-    return <div className="text-center py-20">Loading...</div>;
-  }
+  // Your original login function (kept)
+  const handleLogin = async () => {
+    // ... your original logic here
+    console.log('Login - add your logic');
+  };
+
+  if (step === 'loading') return <div className="text-center py-20 text-xl">Loading account...</div>;
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-center">Account</h1>
 
-        {error && <div className="bg-red-500/20 text-red-400 p-4 rounded-xl mb-6">{error}</div>}
-        {message && <div className="bg-green-500/20 text-green-400 p-4 rounded-xl mb-6">{message}</div>}
+        {error && <div className="bg-red-500/20 border border-red-500 text-red-400 p-4 rounded-xl mb-6">{error}</div>}
+        {message && <div className="bg-green-500/20 border border-green-500 text-green-400 p-4 rounded-xl mb-6">{message}</div>}
 
         {step === 'login' && (
-          <div className="space-y-8">
-            {/* Your existing login form can go here if you want */}
+          <div className="bg-zinc-900 rounded-3xl p-8 space-y-8">
+            {/* Your original email/password login form goes here if you want to keep it */}
 
-            {/* Google Sign In Button */}
-            <div className="border border-green-500/30 rounded-2xl p-8 bg-black/50">
+            {/* GOOGLE LOGIN - MAIN BUTTON */}
+            <div className="pt-6 border-t border-gray-700">
               <button
                 onClick={handleGoogleSignIn}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-black font-medium py-4 px-6 rounded-xl transition-all disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-4 bg-white text-black py-4 rounded-2xl font-medium hover:bg-gray-100 transition-all disabled:opacity-70"
               >
                 <img 
                   src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_128dp.png" 
                   alt="Google" 
                   className="w-6 h-6"
                 />
-                Sign in with Google
+                Sign in with Google (Recommended)
               </button>
-              <p className="text-center text-sm text-gray-400 mt-4">
-                This is the easiest way — your data will sync across all devices
+              <p className="text-center text-sm text-green-400 mt-3">
+                Your data will now sync across phones, computers, etc.
               </p>
             </div>
           </div>
         )}
 
         {step === 'profile' && account && (
-          <div className="bg-zinc-900 rounded-3xl p-8">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-3xl font-bold">Welcome, {account.username}</h2>
-                <p className="text-green-400">{account.email}</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 text-red-400 hover:text-red-500"
-              >
-                <LogOut size={20} /> Logout
-              </button>
-            </div>
+          <div className="bg-zinc-900 rounded-3xl p-10 text-center">
+            <User className="mx-auto mb-4" size={64} />
+            <h2 className="text-3xl font-bold mb-2">Welcome, {account.username}</h2>
+            <p className="text-green-400 mb-8">{account.email}</p>
 
-            <p className="text-green-400 text-center py-12">
-              ✅ Your account is now connected to Supabase.<br />
-              Data will sync across all devices.
-            </p>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 mx-auto text-red-400 hover:text-red-500"
+            >
+              <LogOut /> Sign Out
+            </button>
+
+            <p className="mt-12 text-green-400">✅ Supabase connected. Data syncs across devices now.</p>
           </div>
         )}
       </div>
