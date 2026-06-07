@@ -62,8 +62,12 @@ export default function AccountPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginUsername, setLoginUsername] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [loginSubmitting, setLoginSubmitting] = useState(false);
   const [friendCode, setFriendCode] = useState('');
   const [copied, setCopied] = useState(false);
 
@@ -165,6 +169,64 @@ export default function AccountPage() {
     }
   };
 
+  const handleLogin = async () => {
+    setLoginError('');
+    setMessage('');
+
+    const cleanUsername = loginUsername.trim();
+
+    if (!cleanUsername) {
+      setLoginError('Enter your username.');
+      return;
+    }
+    if (!loginPassword) {
+      setLoginError('Enter your password.');
+      return;
+    }
+    if (!API_URL) {
+      setLoginError('Backend URL is not configured.');
+      return;
+    }
+
+    setLoginSubmitting(true);
+
+    try {
+      const response = await fetch(`${API_URL}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: cleanUsername,
+          password: loginPassword,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed. Check your username and password.');
+      }
+
+      const remoteAccount: Account = {
+        id: data.user.id,
+        username: data.user.username,
+        isAnonymous: false,
+        createdAt: data.user.createdAt,
+        color: randomColor(),
+        email: data.user.email,
+        remote: true,
+      };
+
+      saveLocalAccount(remoteAccount, data.token);
+      setAccount(remoteAccount);
+      setFriendCode(buildFriendCode(remoteAccount));
+      setMessage(`Logged in as ${remoteAccount.username}.`);
+    } catch (err) {
+      setLoginError(err instanceof Error ? err.message : 'Login failed. Please try again.');
+    } finally {
+      setLoginSubmitting(false);
+    }
+  };
+
   const handleCopy = () => {
     navigator.clipboard.writeText(friendCode).catch(() => {});
     setCopied(true);
@@ -247,6 +309,44 @@ export default function AccountPage() {
           >
             <User className="w-5 h-5" />
             {submitting ? 'Creating...' : 'Create Account'}
+          </button>
+        </div>
+
+        <div className="mt-6 rounded-xl border border-secondary/20 bg-background/50 backdrop-blur-sm p-8 space-y-5 animate-scale-in">
+          <h2 className="text-lg font-bold uppercase tracking-wider text-secondary neon-text-cyan">
+            Login
+          </h2>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">Username</label>
+            <input
+              type="text"
+              value={loginUsername}
+              onChange={(event) => setLoginUsername(event.target.value)}
+              className="w-full rounded-lg border border-muted/30 bg-background/50 px-4 py-3 text-foreground focus:outline-none focus:border-secondary/50"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">Password</label>
+            <input
+              type="password"
+              value={loginPassword}
+              onChange={(event) => setLoginPassword(event.target.value)}
+              onKeyDown={(event) => event.key === 'Enter' && handleLogin()}
+              className="w-full rounded-lg border border-muted/30 bg-background/50 px-4 py-3 text-foreground focus:outline-none focus:border-secondary/50"
+            />
+          </div>
+
+          {loginError && <p className="text-xs text-destructive">{loginError}</p>}
+
+          <button
+            onClick={handleLogin}
+            disabled={loginSubmitting}
+            className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-secondary/10 text-secondary border border-secondary/50 rounded-lg hover:bg-secondary/20 disabled:opacity-60 transition-all font-bold uppercase tracking-wider neon-text-cyan"
+          >
+            <User className="w-5 h-5" />
+            {loginSubmitting ? 'Logging in...' : 'Login'}
           </button>
         </div>
       </div>
