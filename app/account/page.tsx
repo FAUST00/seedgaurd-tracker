@@ -2,139 +2,88 @@
 
 import { useState, useEffect } from 'react';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const API_URL = process.env.NEXT_PUBLIC_SEEDGUARD_API_URL || 'https://seedguard-api.onrender.com';
 
 export default function AccountPage() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [step, setStep] = useState('login');
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [user, setUser] = useState<any>(null);
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
-  useEffect(() => {
-    const savedUser = localStorage.getItem('supabase_user');
-    if (savedUser) setUser(JSON.parse(savedUser));
-  }, []);
-
-  const handleAuth = async () => {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      setError("Supabase keys not set in next.config.js");
-      return;
-    }
-    if (!password) {
-      setError("Password is required");
-      return;
-    }
-
+  const handleLogin = async () => {
     setLoading(true);
     setError('');
-    setSuccess('');
-
     try {
-      const endpoint = isLogin ? '/auth/v1/token?grant_type=password' : '/auth/v1/signup';
-
-      const res = await fetch(`${SUPABASE_URL}${endpoint}`, {
+      const res = await fetch(`${API_URL}/api/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_ANON_KEY,
-        },
-        body: JSON.stringify({
-          email: email || `${username.toLowerCase()}@example.com`,
-          password,
-          options: !isLogin ? { data: { username } } : undefined,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
       });
-
       const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error_description || data.error || 'Failed');
-
-      if (isLogin) {
-        localStorage.setItem('supabase_user', JSON.stringify(data.user || data));
-        setUser(data.user || data);
-        setSuccess('Logged in successfully!');
-      } else {
-        setSuccess('Account created! You can now login.');
-      }
-    } catch (err: any) {
+      if (!res.ok) throw new Error(data.error || 'Login failed');
+      setLoggedInUser(data.user);
+      localStorage.setItem('seedguard_user', JSON.stringify(data.user));
+    } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('supabase_user');
-    setUser(null);
-    setSuccess('');
+  const handleCreate = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch(`${API_URL}/api/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Create failed');
+      setLoggedInUser(data.user);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (user) {
-    return (
-      <div className="p-8 max-w-md mx-auto text-center">
-        <h1 className="text-4xl font-bold mb-6">Account</h1>
-        <p className="mb-8">Logged in as: <strong>{user.user_metadata?.username || user.email}</strong></p>
-        <button onClick={logout} className="bg-red-600 px-8 py-3 rounded text-white">
-          Logout
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div className="p-8 max-w-md mx-auto">
-      <h1 className="text-4xl font-bold mb-8 text-center text-cyan-400">ACCOUNT</h1>
+    <div className="p-8 max-w-md mx-auto text-white">
+      <h1 className="text-4xl font-bold text-center mb-8">ACCOUNT</h1>
 
-      <div className="space-y-6">
-        <h2 className="text-2xl text-center">{isLogin ? 'Login' : 'Create Account'}</h2>
-
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="w-full p-4 bg-zinc-900 border border-zinc-700 rounded-lg"
-        />
-
-        <input
-          type="email"
-          placeholder="Email (optional but recommended)"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-4 bg-zinc-900 border border-zinc-700 rounded-lg"
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-4 bg-zinc-900 border border-zinc-700 rounded-lg"
-        />
-
-        <button 
-          onClick={handleAuth}
-          disabled={loading}
-          className="w-full bg-purple-600 hover:bg-purple-700 py-4 rounded-lg font-medium disabled:opacity-50"
-        >
-          {loading ? 'Processing...' : (isLogin ? 'LOGIN' : 'CREATE ACCOUNT')}
-        </button>
-
-        <button 
-          onClick={() => setIsLogin(!isLogin)}
-          className="w-full text-zinc-400 hover:text-white py-2"
-        >
-          {isLogin ? "Don't have an account? Create one" : "Already have an account? Login"}
-        </button>
-
-        {error && <p className="text-red-500 text-center">{error}</p>}
-        {success && <p className="text-green-500 text-center">{success}</p>}
-      </div>
+      {loggedInUser ? (
+        <div className="text-center">
+          <p>Logged in as {loggedInUser.username}</p>
+          <button onClick={() => { localStorage.clear(); setLoggedInUser(null); }} className="mt-6 text-red-500">Logout</button>
+        </div>
+      ) : (
+        <>
+          {step === 'login' ? (
+            <div className="space-y-4">
+              <h2>Login</h2>
+              <input placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} className="w-full p-3 bg-zinc-900 rounded" />
+              <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="w-full p-3 bg-zinc-900 rounded" />
+              <button onClick={handleLogin} disabled={loading} className="w-full bg-teal-600 py-3 rounded">LOGIN</button>
+              <button onClick={() => setStep('create')} className="text-zinc-400">Create account</button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <h2>Create Account</h2>
+              <input placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} className="w-full p-3 bg-zinc-900 rounded" />
+              <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} className="w-full p-3 bg-zinc-900 rounded" />
+              <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="w-full p-3 bg-zinc-900 rounded" />
+              <button onClick={handleCreate} disabled={loading} className="w-full bg-purple-600 py-3 rounded">CREATE ACCOUNT</button>
+              <button onClick={() => setStep('login')} className="text-zinc-400">Back to login</button>
+            </div>
+          )}
+          {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+        </>
+      )}
     </div>
   );
 }
