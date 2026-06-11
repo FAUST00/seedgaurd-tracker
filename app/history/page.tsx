@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { Flame, ShieldCheck, Plus, Trash2 } from 'lucide-react';
-import { syncWithCloud } from '@/lib/sync';
-
-interface HistoryEntry {
-  id: string;
-  date: string;
-  type: 'victory' | 'relapse';
-  note?: string;
-}
+import {
+  syncWithCloud,
+  getUser,
+  getHistoryFromCloud,
+  saveHistoryEntryToCloud,
+  deleteHistoryEntryFromCloud,
+  type HistoryEntry,
+} from '@/lib/sync';
 
 export default function History() {
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
@@ -18,25 +18,44 @@ export default function History() {
   const [entryType, setEntryType] = useState<'victory' | 'relapse'>('victory');
 
   useEffect(() => {
-    // Load history from localStorage
-    const loadHistory = () => {
+    async function loadHistory() {
       try {
-        const saved = (typeof window!=='undefined'?localStorage:null)?.getItem('seedguard_history');
+        // 1. Load from localStorage immediately so the UI feels instant
+        const saved = typeof window !== 'undefined'
+          ? localStorage.getItem('seedguard_history')
+          : null;
         if (saved) {
           setEntries(JSON.parse(saved));
+        }
+
+        // 2. If logged in, fetch from Supabase and use that as the source of truth
+        const user = await getUser();
+        if (user) {
+          const cloudEntries = await getHistoryFromCloud();
+          if (cloudEntries.length > 0) {
+            setEntries(cloudEntries);
+            // Keep localStorage in sync with cloud
+            localStorage.setItem('seedguard_history', JSON.stringify(cloudEntries));
+          } else if (saved) {
+            // User is logged in but cloud is empty — migrate their local data up
+            const localEntries: HistoryEntry[] = JSON.parse(saved);
+            for (const entry of localEntries) {
+              await saveHistoryEntryToCloud(entry);
+            }
+            setEntries(localEntries);
+          }
         }
       } catch (error) {
         console.error('Failed to load history:', error);
       } finally {
         setLoading(false);
       }
-    };
-
+    }
     loadHistory();
   }, []);
 
-  const addEntry = () => {
-    // Require a note for victories; relapses can be logged without one
+  const addEntry = async () => {
+    // Victories require a note; relapses can be logged without one
     if (!newNote.trim() && entryType === 'victory') return;
 
     const newEntry: HistoryEntry = {
@@ -48,14 +67,19 @@ export default function History() {
 
     const updated = [newEntry, ...entries];
     setEntries(updated);
+
+    // Save to localStorage
     localStorage.setItem('seedguard_history', JSON.stringify(updated));
 
-    // If logging a relapse, reset the streak timer and increment relapse counter
+    // Save to Supabase (silently — don't block the UI)
+    saveHistoryEntryToCloud(newEntry).catch(console.warn);
+
+    // If it's a relapse, reset streak timer and update stats
     if (entryType === 'relapse') {
       const now = new Date().toISOString();
       localStorage.setItem('seedguard_streak_start', now);
       try {
-        const saved = (typeof window!=='undefined'?localStorage:null)?.getItem('seedguard_stats');
+        const saved = localStorage.getItem('seedguard_stats');
         const stats = saved ? JSON.parse(saved) : {};
         const updatedStats = {
           ...stats,
@@ -64,17 +88,19 @@ export default function History() {
         };
         localStorage.setItem('seedguard_stats', JSON.stringify(updatedStats));
       } catch {}
+      // Sync the reset streak to cloud too
+      syncWithCloud(true).catch(console.warn);
     }
 
     setNewNote('');
-    syncWithCloud();
   };
 
-  const deleteEntry = (id: string) => {
+  const deleteEntry = async (id: string) => {
     const updated = entries.filter((e) => e.id !== id);
     setEntries(updated);
     localStorage.setItem('seedguard_history', JSON.stringify(updated));
-    syncWithCloud();
+    // Delete from Supabase too
+    deleteHistoryEntryFromCloud(id).catch(console.warn);
   };
 
   if (loading) {
@@ -91,6 +117,7 @@ export default function History() {
   const relapses = entries.filter((e) => e.type === 'relapse');
 
   if (typeof window === 'undefined') return null;
+
   return (
     <div className="container mx-auto p-4 md:p-8 max-w-6xl space-y-8 page-entry">
       {/* Header */}
@@ -106,7 +133,6 @@ export default function History() {
       {/* Add Entry Section */}
       <div className="rounded-xl border border-primary/20 bg-background/50 backdrop-blur-sm p-6 space-y-4 animate-scale-in">
         <h3 className="font-bold text-lg uppercase tracking-wider">Log New Entry</h3>
-        
         <div className="space-y-4">
           <div className="flex gap-4">
             <button
@@ -163,7 +189,6 @@ export default function History() {
             <ShieldCheck className="w-6 h-6" />
             Victories & Notes
           </h2>
-
           {victories.length === 0 ? (
             <div className="text-sm text-muted-foreground italic border border-dashed border-muted/50 rounded-lg p-6 text-center">
               No wins or notes logged yet. Start your journey today!
@@ -172,7 +197,19 @@ export default function History() {
             <div className="space-y-3">
               {victories.map((entry) => (
                 <div key={entry.id} className="rounded-lg border border-secondary/20 bg-background/50 p-4 hover:border-secondary/50 transition-all group">
-                  <div className="flex items-start justify-between gap-4"><div className="flex-1"><p className="text-xs text-muted-foreground mb-2">{entry.date}</p><p className="text-foreground">{entry.note}</p></div><button onClick={()=>deleteEntry(entry.id)} className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-destructive/20 rounded text-destructive"><Trash2 className="w-4 h-4"/></button></div></div>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <p className="text-xs text-muted-foreground mb-2">{entry.date}</p>
+                      <p className="text-foreground">{entry.note}</p>
+                    </div>
+                    <button
+                      onClick={() => deleteEntry(entry.id)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-destructive/20 rounded text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
               ))}
             </div>
           )}
@@ -180,26 +217,59 @@ export default function History() {
 
         {/* Relapses */}
         <div className="space-y-4 animate-scale-in [animation-delay:100ms]">
-          <h2 className="text-xl font-bold uppercase tracking-widest flex items-center gap-2 text-destructive"><Flame className="w-6 h-6"/> Relapse Log</h2>
-          {relapses.length === 0 ? (<div className="text-sm text-muted-foreground italic border border-dashed border-muted/50 rounded-lg p-6 text-center">No relapses logged yet. Keep it up!</div>) : (
+          <h2 className="text-xl font-bold uppercase tracking-widest flex items-center gap-2 text-destructive">
+            <Flame className="w-6 h-6" />
+            Relapse Log
+          </h2>
+          {relapses.length === 0 ? (
+            <div className="text-sm text-muted-foreground italic border border-dashed border-muted/50 rounded-lg p-6 text-center">
+              No relapses logged yet. Keep it up!
+            </div>
+          ) : (
             <div className="space-y-3">
-              {relapses.map((entry)=>(
+              {relapses.map((entry) => (
                 <div key={entry.id} className="rounded-lg border border-destructive/20 bg-background/50 p-4 hover:border-destructive/50 transition-all group">
-                  <div className="flex items-start justify-between gap-4"><div className="flex-1"><p className="text-xs text-muted-foreground mb-2">{entry.date}</p><p className="text-foreground">{entry.note||'Relapse recorded'}</p></div><button onClick={()=>deleteEntry(entry.id)} className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-destructive/20 rounded text-destructive"><Trash2 className="w-4 h-4"/></button></div></div>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <p className="text-xs text-muted-foreground mb-2">{entry.date}</p>
+                      <p className="text-foreground">{entry.note || 'Relapse recorded'}</p>
+                    </div>
+                    <button
+                      onClick={() => deleteEntry(entry.id)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-destructive/20 rounded text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
               ))}
             </div>
           )}
         </div>
       </div>
-      
-      { entries.length > 0 && (
+
+      {entries.length > 0 && (
         <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-secondary/5 backdrop-blur-sm p-8">
           <h3 className="font-bold text-lg mb-4 uppercase tracking-wider">Session Stats</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center"><p className="text-3xl font-bold text-secondary neon-text-cyan">{victories.length}</p><p className="text-sm text-muted-foreground mt-1">Victories</p></div>
-            <div className="text-center"><p className="text-3xl font-bold text-destructive">{relapses.length}</p><p className="text-sm text-muted-foreground mt-1">Relapses</p></div>
-            <div className="text-center"><p className="text-3xl font-bold text-primary neon-text-pink">{Math.round((victories.length/entries.length)*100)}%</p><p className="text-sm text-muted-foreground mt-1">Success Rate</p></div>
-            <div className="text-center"><p className="text-3xl font-bold text-accent">{entries.length}</p><p className="text-sm text-muted-foreground mt-1">Total Entries</p></div>
+            <div className="text-center">
+              <p className="text-3xl font-bold text-secondary neon-text-cyan">{victories.length}</p>
+              <p className="text-sm text-muted-foreground mt-1">Victories</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl font-bold text-destructive">{relapses.length}</p>
+              <p className="text-sm text-muted-foreground mt-1">Relapses</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl font-bold text-primary neon-text-pink">
+                {entries.length > 0 ? Math.round((victories.length / entries.length) * 100) : 0}%
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">Success Rate</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl font-bold text-accent">{entries.length}</p>
+              <p className="text-sm text-muted-foreground mt-1">Total Entries</p>
+            </div>
           </div>
         </div>
       )}
