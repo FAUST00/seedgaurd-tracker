@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background text-foreground flex flex-col dark antialiased">
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body className="min-h-screen bg-background text-foreground antialiased">
         <div className="min-h-screen bg-background flex flex-col md:flex-row">
           <Sidebar />
           <main className="flex-1 overflow-y-auto page-entry">
