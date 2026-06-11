@@ -3,6 +3,9 @@
   "version": "2.0.0",
   "description": "SeedGuard - Professional PMO tracking app with modern UI/UX",
   "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
