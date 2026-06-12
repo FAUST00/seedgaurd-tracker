@@ -13,10 +13,6 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
-env:
-  NEXT_PUBLIC_SUPABASE_URL: https://earfjshpbwcnpqinrrvl.supabase.co
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhcmZqc2hwYndjbnBxaW5ycnZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3OTA1NDEsImV4cCI6MjA5NjM2NjU0MX0.5H38IPnQsbG-DL6qBW8wXhnq0hDTAr2yPH-Shv2xtvg
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -32,6 +28,9 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://earfjshpbwcnpqinrrvl.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhcmZqc2hwYndjbnBxaW5ycnZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3OTA1NDEsImV4cCI6MjA5NjM2NjU0MX0.5H38IPnQsbG-DL6qBW8wXhnq0hDTAr2yPH-Shv2xtvg
 
       - name: Add .nojekyll
         run: touch out/.nojekyll
