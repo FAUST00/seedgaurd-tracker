@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Flame, ShieldCheck, Plus, Trash2 } from 'lucide-react';
+import { Flame, ShieldCheck, Plus, Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
 import {
   syncWithCloud,
   getUser,
@@ -14,35 +14,40 @@ import {
 export default function History() {
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saved' | 'error'>('idle');
   const [newNote, setNewNote] = useState('');
   const [entryType, setEntryType] = useState<'victory' | 'relapse'>('victory');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     async function loadHistory() {
       try {
-        // 1. Load from localStorage immediately so the UI feels instant
+        // Show local data instantly while cloud loads
         const saved = typeof window !== 'undefined'
           ? localStorage.getItem('seedguard_history')
           : null;
-        if (saved) {
-          setEntries(JSON.parse(saved));
-        }
+        if (saved) setEntries(JSON.parse(saved));
 
-        // 2. If logged in, fetch from Supabase and use that as the source of truth
+        // Check auth with fresh Supabase call
         const user = await getUser();
+        setIsLoggedIn(!!user);
+
         if (user) {
+          // Cloud is the source of truth when logged in
           const cloudEntries = await getHistoryFromCloud();
           if (cloudEntries.length > 0) {
+            // Cloud has data — use it and update local cache
             setEntries(cloudEntries);
-            // Keep localStorage in sync with cloud
             localStorage.setItem('seedguard_history', JSON.stringify(cloudEntries));
           } else if (saved) {
-            // User is logged in but cloud is empty — migrate their local data up
+            // Logged in but cloud empty — auto-migrate local data up
             const localEntries: HistoryEntry[] = JSON.parse(saved);
-            for (const entry of localEntries) {
-              await saveHistoryEntryToCloud(entry);
+            if (localEntries.length > 0) {
+              for (const entry of localEntries) {
+                await saveHistoryEntryToCloud(entry);
+              }
             }
-            setEntries(localEntries);
           }
         }
       } catch (error) {
@@ -55,52 +60,61 @@ export default function History() {
   }, []);
 
   const addEntry = async () => {
-    // Victories require a note; relapses can be logged without one
     if (!newNote.trim() && entryType === 'victory') return;
 
     const newEntry: HistoryEntry = {
       id: Date.now().toString(),
       date: new Date().toLocaleString(),
       type: entryType,
-      note: newNote,
+      note: newNote.trim(),
     };
 
+    // Optimistically update UI
     const updated = [newEntry, ...entries];
     setEntries(updated);
-
-    // Save to localStorage
     localStorage.setItem('seedguard_history', JSON.stringify(updated));
+    setNewNote('');
 
-    // Save to Supabase (silently — don't block the UI)
-    saveHistoryEntryToCloud(newEntry).catch(console.warn);
+    // Save to Supabase — awaited so we know if it succeeded
+    if (isLoggedIn) {
+      setSaving(true);
+      setSaveStatus('idle');
+      try {
+        await saveHistoryEntryToCloud(newEntry);
+        setSaveStatus('saved');
+      } catch (err) {
+        console.error('Failed to save to cloud:', err);
+        setSaveStatus('error');
+      } finally {
+        setSaving(false);
+        setTimeout(() => setSaveStatus('idle'), 3000);
+      }
+    }
 
-    // If it's a relapse, reset streak timer and update stats
+    // Relapse: reset streak in localStorage + cloud
     if (entryType === 'relapse') {
       const now = new Date().toISOString();
       localStorage.setItem('seedguard_streak_start', now);
       try {
-        const saved = localStorage.getItem('seedguard_stats');
-        const stats = saved ? JSON.parse(saved) : {};
-        const updatedStats = {
+        const statsRaw = localStorage.getItem('seedguard_stats');
+        const stats = statsRaw ? JSON.parse(statsRaw) : {};
+        localStorage.setItem('seedguard_stats', JSON.stringify({
           ...stats,
           currentStreak: 0,
           relapses: (stats.relapses || 0) + 1,
-        };
-        localStorage.setItem('seedguard_stats', JSON.stringify(updatedStats));
+        }));
       } catch {}
-      // Sync the reset streak to cloud too
       syncWithCloud(true).catch(console.warn);
     }
-
-    setNewNote('');
   };
 
   const deleteEntry = async (id: string) => {
     const updated = entries.filter((e) => e.id !== id);
     setEntries(updated);
     localStorage.setItem('seedguard_history', JSON.stringify(updated));
-    // Delete from Supabase too
-    deleteHistoryEntryFromCloud(id).catch(console.warn);
+    if (isLoggedIn) {
+      deleteHistoryEntryFromCloud(id).catch(console.warn);
+    }
   };
 
   if (loading) {
@@ -120,7 +134,6 @@ export default function History() {
 
   return (
     <div className="container mx-auto p-4 md:p-8 max-w-6xl space-y-8 page-entry">
-      {/* Header */}
       <div>
         <h1 className="text-4xl font-extrabold tracking-widest uppercase italic neon-text-cyan text-secondary">
           History
@@ -130,39 +143,46 @@ export default function History() {
         </p>
       </div>
 
-      {/* Add Entry Section */}
+      {/* Log Entry */}
       <div className="rounded-xl border border-primary/20 bg-background/50 backdrop-blur-sm p-6 space-y-4 animate-scale-in">
-        <h3 className="font-bold text-lg uppercase tracking-wider">Log New Entry</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-lg uppercase tracking-wider">Log New Entry</h3>
+          {saveStatus === 'saved' && (
+            <span className="flex items-center gap-1 text-xs text-green-400">
+              <CheckCircle2 className="w-4 h-4" /> Saved to cloud
+            </span>
+          )}
+          {saveStatus === 'error' && (
+            <span className="flex items-center gap-1 text-xs text-red-400">
+              <AlertCircle className="w-4 h-4" /> Saved locally only
+            </span>
+          )}
+        </div>
         <div className="space-y-4">
           <div className="flex gap-4">
             <button
               onClick={() => setEntryType('victory')}
-              className={`
-                flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all
-                ${entryType === 'victory'
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all ${
+                entryType === 'victory'
                   ? 'bg-primary/20 text-primary neon-text-pink border border-primary/50'
                   : 'bg-muted/50 text-muted-foreground border border-muted/50 hover:bg-muted/75'
-                }
-              `}
+              }`}
             >
               <ShieldCheck className="w-5 h-5" />
               Victory
             </button>
             <button
               onClick={() => setEntryType('relapse')}
-              className={`
-                flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all
-                ${entryType === 'relapse'
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all ${
+                entryType === 'relapse'
                   ? 'bg-destructive/20 text-destructive border border-destructive/50'
                   : 'bg-muted/50 text-muted-foreground border border-muted/50 hover:bg-muted/75'
-                }
-              `}
+              }`}
             >
               <Flame className="w-5 h-5" />
               Relapse
             </button>
           </div>
-
           <textarea
             value={newNote}
             onChange={(e) => setNewNote(e.target.value)}
@@ -170,20 +190,19 @@ export default function History() {
             className="w-full rounded-lg border border-muted/30 bg-background/50 px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all"
             rows={3}
           />
-
           <button
             onClick={addEntry}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary/20 text-primary border border-primary/50 rounded-lg hover:bg-primary/30 transition-all font-medium uppercase tracking-wider"
+            disabled={saving}
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary/20 text-primary border border-primary/50 rounded-lg hover:bg-primary/30 transition-all font-medium uppercase tracking-wider disabled:opacity-50"
           >
             <Plus className="w-5 h-5" />
-            Log Entry
+            {saving ? 'Saving...' : 'Log Entry'}
           </button>
         </div>
       </div>
 
       {/* History Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Victories */}
         <div className="space-y-4 animate-scale-in">
           <h2 className="text-xl font-bold uppercase tracking-widest flex items-center gap-2 text-secondary neon-text-cyan">
             <ShieldCheck className="w-6 h-6" />
@@ -215,7 +234,6 @@ export default function History() {
           )}
         </div>
 
-        {/* Relapses */}
         <div className="space-y-4 animate-scale-in [animation-delay:100ms]">
           <h2 className="text-xl font-bold uppercase tracking-widest flex items-center gap-2 text-destructive">
             <Flame className="w-6 h-6" />
