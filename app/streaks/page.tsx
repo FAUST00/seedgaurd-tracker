@@ -18,7 +18,7 @@
  * Background art: la-sunset.jpg in the header banner.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Flame, Trophy, Medal, Crown, RefreshCw, Loader2, Globe, Users } from 'lucide-react';
 import { ImageBanner } from '@/components/synth-background';
 import { LeaderboardRowSkeleton } from '@/components/skeleton';
@@ -31,6 +31,7 @@ import {
 } from '@/lib/streaks';
 import { syncProfileStreak } from '@/lib/social';
 import { getUser } from '@/lib/sync';
+import { supabase } from '@/lib/supabase';
 import { ART } from '@/lib/assets';
 
 type View = 'friends' | 'global';
@@ -185,6 +186,31 @@ export default function StreaksPage() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  // ── Live updates: Realtime + 60-second polling fallback ──────────────────────
+  const loadDataRef = useRef(loadData);
+  useEffect(() => { loadDataRef.current = loadData; }, [loadData]);
+
+  useEffect(() => {
+    // Supabase Realtime — fires immediately when any profile's streak changes
+    const channel = supabase
+      .channel('leaderboard-profiles')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'profiles' },
+        () => { loadDataRef.current(true); }
+      )
+      .subscribe();
+
+    // 60-second polling fallback (covers browsers that block WebSockets)
+    const interval = setInterval(() => { loadDataRef.current(true); }, 60_000);
+
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(interval);
+    };
+  }, []); // runs once on mount, cleaned up on unmount
+  // ─────────────────────────────────────────────────────────────────────────────
 
   const myEntry = entries.find((e) => e.isMe);
 
