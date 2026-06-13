@@ -2,23 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: 0 0% 3%;
-  --foreground: 0 0% 98%;
-  --primary: 300 100% 50%;
-  --primary-foreground: 0 0% 0%;
-  --secondary: 180 100% 50%;
-  --secondary-foreground: 0 0% 0%;
-  --destructive: 0 100% 50%;
-  --destructive-foreground: 0 0% 100%;
-  --muted: 0 0% 20%;
-  --muted-foreground: 0 0% 65%;
-  --accent: 280 100% 50%;
+/* ════════════════════════════════════════════════════════════════════
+   SeedGuard theme system — all colors flow from these CSS variables.
+   .dark          → Synthwave Night (deep purples, neon pink/cyan)
+   .theme-bright  → Synthwave Neon Bright (cranked neons, gradient bg)
+   Change a variable here and the whole app follows.
+   ════════════════════════════════════════════════════════════════════ */
+
+:root,
+.dark {
+  /* Night city: deep indigo sky */
+  --background: 256 50% 6%;
+  --foreground: 280 60% 96%;
+  --card: 258 45% 9%;
+  --card-glass: 258 45% 9%;
+
+  --primary: 315 100% 60%;            /* hot magenta */
+  --primary-foreground: 0 0% 4%;
+  --secondary: 184 100% 55%;          /* electric cyan */
+  --secondary-foreground: 0 0% 4%;
+  --accent: 265 95% 66%;              /* electric purple */
   --accent-foreground: 0 0% 100%;
-  --ring: 300 100% 50%;
-  
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --gold: 43 100% 55%;                /* leaderboard trophies */
+  --destructive: 0 100% 62%;
+  --destructive-foreground: 0 0% 100%;
+
+  --muted: 258 30% 20%;
+  --muted-foreground: 268 22% 70%;
+  --ring: 315 100% 60%;
+
+  /* Atmosphere */
+  --sky-top: 248 70% 10%;
+  --sky-bottom: 290 65% 16%;
+  --grid-line: 315 100% 60%;
+  --glow-strength: 0.45;
+  --scanline-opacity: 0.05;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-display: "Orbitron", "Segoe UI", sans-serif;
   --font-mono: "Fira Code", "Courier New", monospace;
+}
+
+/* "Synthwave Neon Bright" — dark mode OFF. Brighter, higher-contrast
+   neons (vivid cyan / magenta / yellow / electric blue) over a lighter
+   purple gradient. Readable, still very much night-city. */
+.theme-bright {
+  --background: 252 55% 14%;
+  --foreground: 60 100% 97%;
+  --card: 254 50% 19%;
+  --card-glass: 254 50% 19%;
+
+  --primary: 308 100% 68%;            /* vivid magenta */
+  --primary-foreground: 0 0% 4%;
+  --secondary: 178 100% 60%;          /* vibrant cyan */
+  --secondary-foreground: 0 0% 4%;
+  --accent: 217 100% 68%;             /* electric blue */
+  --accent-foreground: 0 0% 100%;
+  --gold: 50 100% 60%;                /* neon yellow-gold */
+  --destructive: 0 100% 68%;
+  --destructive-foreground: 0 0% 100%;
+
+  --muted: 254 35% 30%;
+  --muted-foreground: 255 35% 82%;
+  --ring: 178 100% 60%;
+
+  --sky-top: 240 70% 20%;
+  --sky-bottom: 300 75% 28%;
+  --grid-line: 178 100% 60%;
+  --glow-strength: 0.7;
+  --scanline-opacity: 0.03;
 }
 
 html {
@@ -28,70 +81,185 @@ html {
 body {
   @apply bg-background text-foreground antialiased;
   font-feature-settings: "rlig" 1, "calt" 1;
+  background-image: linear-gradient(
+    180deg,
+    hsl(var(--sky-top)) 0%,
+    hsl(var(--background)) 55%,
+    hsl(var(--sky-bottom)) 100%
+  );
+  background-attachment: fixed;
 }
 
-/* Neon text effects */
+/* ── Neon text & box glows (scale with theme glow strength) ────────── */
 .neon-text-pink {
-  text-shadow: 0 0 8px rgba(255, 0, 255, 0.8), 0 0 16px rgba(255, 0, 255, 0.4);
+  text-shadow:
+    0 0 8px hsl(var(--primary) / calc(var(--glow-strength) + 0.3)),
+    0 0 18px hsl(var(--primary) / var(--glow-strength));
 }
-
 .neon-text-cyan {
-  text-shadow: 0 0 8px rgba(0, 255, 255, 0.8), 0 0 16px rgba(0, 255, 255, 0.4);
+  text-shadow:
+    0 0 8px hsl(var(--secondary) / calc(var(--glow-strength) + 0.3)),
+    0 0 18px hsl(var(--secondary) / var(--glow-strength));
 }
-
+.neon-text-gold {
+  text-shadow:
+    0 0 8px hsl(var(--gold) / calc(var(--glow-strength) + 0.3)),
+    0 0 18px hsl(var(--gold) / var(--glow-strength));
+}
 .neon-box-pink {
-  box-shadow: 0 0 16px rgba(255, 0, 255, 0.4), inset 0 0 16px rgba(255, 0, 255, 0.1);
+  box-shadow:
+    0 0 16px hsl(var(--primary) / var(--glow-strength)),
+    inset 0 0 16px hsl(var(--primary) / 0.08);
 }
-
 .neon-box-cyan {
-  box-shadow: 0 0 16px rgba(0, 255, 255, 0.4), inset 0 0 16px rgba(0, 255, 255, 0.1);
+  box-shadow:
+    0 0 16px hsl(var(--secondary) / var(--glow-strength)),
+    inset 0 0 16px hsl(var(--secondary) / 0.08);
+}
+.neon-box-gold {
+  box-shadow:
+    0 0 16px hsl(var(--gold) / var(--glow-strength)),
+    inset 0 0 16px hsl(var(--gold) / 0.08);
 }
 
-/* Smooth transitions for all interactive elements */
+/* Neon hover lift for interactive cards */
+.neon-hover {
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+.neon-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 22px hsl(var(--primary) / calc(var(--glow-strength) * 0.8));
+}
+
+/* ── Atmosphere: retro horizon grid, stars, scanlines ──────────────── */
+.synth-grid {
+  background-image:
+    linear-gradient(hsl(var(--grid-line) / 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--grid-line) / 0.22) 1px, transparent 1px);
+  background-size: 44px 44px;
+  transform: perspective(420px) rotateX(62deg);
+  transform-origin: top center;
+  animation: grid-scroll 16s linear infinite;
+  mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+}
+@keyframes grid-scroll {
+  from { background-position: 0 0; }
+  to   { background-position: 0 44px; }
+}
+
+.synth-stars {
+  background-image:
+    radial-gradient(1px 1px at 12% 22%, hsl(0 0% 100% / 0.8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 31% 9%,  hsl(0 0% 100% / 0.6) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 47% 31%, hsl(var(--secondary) / 0.8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 63% 14%, hsl(0 0% 100% / 0.7) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 78% 27%, hsl(var(--primary) / 0.7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 89% 8%,  hsl(0 0% 100% / 0.6) 50%, transparent 51%),
+    radial-gradient(1px 1px at 22% 41%, hsl(0 0% 100% / 0.5) 50%, transparent 51%),
+    radial-gradient(1px 1px at 71% 44%, hsl(0 0% 100% / 0.45) 50%, transparent 51%);
+  animation: star-twinkle 5s ease-in-out infinite alternate;
+}
+@keyframes star-twinkle {
+  from { opacity: 0.55; }
+  to   { opacity: 1; }
+}
+
+.synth-scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    hsl(0 0% 0% / var(--scanline-opacity)) 3px,
+    transparent 4px
+  );
+}
+
+/* Sun half-circle on the horizon (pure CSS, no image needed) */
+.synth-sun {
+  background: linear-gradient(
+    180deg,
+    hsl(50 100% 65%) 0%,
+    hsl(var(--primary)) 70%,
+    hsl(var(--accent)) 100%
+  );
+  border-radius: 50%;
+  filter: blur(1px);
+  box-shadow: 0 0 80px hsl(var(--primary) / 0.55);
+  mask-image: repeating-linear-gradient(
+    to bottom, black 0 12px, transparent 12px 16px
+  );
+}
+
+/* ── Flames for streak leaderboards ────────────────────────────────── */
+.flame-glow {
+  animation: flame-pulse 1.6s ease-in-out infinite alternate;
+}
+@keyframes flame-pulse {
+  from { filter: drop-shadow(0 0 3px hsl(var(--gold) / 0.7)); }
+  to   { filter: drop-shadow(0 0 10px hsl(var(--primary) / 0.9)); }
+}
+
+/* ── Skeleton shimmer ──────────────────────────────────────────────── */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: hsl(var(--muted) / 0.45);
+  border-radius: 0.5rem;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, hsl(var(--foreground) / 0.08), transparent);
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  to { transform: translateX(100%); }
+}
+
+/* ── Base element styling ──────────────────────────────────────────── */
 button, a, input, select, textarea {
   @apply transition-all duration-200;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  @apply w-2 h-2;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-background;
-}
-
+::-webkit-scrollbar { @apply w-2 h-2; }
+::-webkit-scrollbar-track { background: hsl(var(--background)); }
 ::-webkit-scrollbar-thumb {
-  @apply bg-muted rounded hover:bg-muted/80 transition-colors;
+  background: hsl(var(--muted));
+  border-radius: 4px;
 }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--accent) / 0.6); }
 
-/* Selection styling */
 ::selection {
-  @apply bg-primary/20 text-foreground;
+  background: hsl(var(--primary) / 0.25);
+  color: hsl(var(--foreground));
 }
 
-/* Focus states */
 :focus-visible {
   @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background rounded;
 }
 
-/* Glass morphism effect */
 .glass-effect {
-  @apply bg-background/50 backdrop-blur-sm border border-primary/10;
+  background: hsl(var(--card-glass) / 0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid hsl(var(--primary) / 0.12);
 }
 
 /* Smooth page transitions */
 @keyframes pageEntry {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+.page-entry { animation: pageEntry 0.3s ease-out; }
 
-.page-entry {
-  animation: pageEntry 0.3s ease-out;
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  .synth-grid, .synth-stars, .flame-glow, .skeleton::after {
+    animation: none !important;
+  }
 }
