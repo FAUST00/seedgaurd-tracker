@@ -2,7 +2,9 @@
 
 /**
  * ProfileCard — mini hover card shown on leaderboard / friends rows.
- * Appears in a floating panel positioned relative to the trigger element.
+ *
+ * Fix applied: increased card opacity (bg-background/90), bolder border,
+ * foreground text for stat labels and values for full readability.
  */
 
 import { useEffect, useRef, useState } from 'react';
@@ -12,7 +14,7 @@ import type { StreakEntry } from '@/lib/streaks';
 
 interface Props {
   entry: Pick<StreakEntry, 'id' | 'username' | 'avatar_url' | 'current_streak' | 'best_streak' | 'streak_start' | 'last_active' | 'isMe'>;
-  children: React.ReactNode;  // the trigger element
+  children: React.ReactNode;
 }
 
 export function ProfileCard({ entry, children }: Props) {
@@ -32,8 +34,10 @@ export function ProfileCard({ entry, children }: Props) {
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (!cardRef.current?.contains(e.target as Node) &&
-          !triggerRef.current?.contains(e.target as Node)) {
+      if (
+        !cardRef.current?.contains(e.target as Node) &&
+        !triggerRef.current?.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     };
@@ -67,7 +71,8 @@ export function ProfileCard({ entry, children }: Props) {
           className={`
             absolute top-0 z-50 w-60
             ${pos === 'right' ? 'left-full ml-3' : 'right-full mr-3'}
-            glass-effect border border-primary/30 rounded-2xl p-5 shadow-2xl animate-scale-in
+            bg-background/90 backdrop-blur-md border border-primary/60
+            rounded-2xl p-5 shadow-2xl shadow-primary/20 animate-scale-in
           `}
         >
           {/* Avatar */}
@@ -87,7 +92,7 @@ export function ProfileCard({ entry, children }: Props) {
               )}
             </div>
             <div className="min-w-0">
-              <p className={`font-bold truncate text-sm ${tier.color} ${entry.isMe ? 'neon-text-pink' : ''}`}>
+              <p className={`font-bold truncate text-sm ${tier.color || 'text-foreground'} ${entry.isMe ? 'neon-text-pink' : ''}`}>
                 {entry.username}
               </p>
               {entry.isMe && (
@@ -102,27 +107,31 @@ export function ProfileCard({ entry, children }: Props) {
           </div>
 
           {/* Stats */}
-          <div className="space-y-2 text-sm">
+          <div className="space-y-2.5 text-sm">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground flex items-center gap-1.5">
+              <span className="text-foreground/75 flex items-center gap-1.5 font-medium">
                 <Flame className="w-3.5 h-3.5 flame-glow" aria-hidden /> Current
               </span>
-              <span className={`font-bold tabular-nums ${tier.color}`}>
+              <span className={`font-bold tabular-nums ${tier.color || 'text-foreground'}`}>
                 {entry.current_streak} days
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground flex items-center gap-1.5">
+              <span className="text-foreground/75 flex items-center gap-1.5 font-medium">
                 <Trophy className="w-3.5 h-3.5" aria-hidden /> Best
               </span>
-              <span className="font-semibold tabular-nums">{entry.best_streak} days</span>
+              <span className="font-bold tabular-nums text-foreground">
+                {entry.best_streak} days
+              </span>
             </div>
             {entry.streak_start && (
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground flex items-center gap-1.5">
+                <span className="text-foreground/75 flex items-center gap-1.5 font-medium">
                   <Calendar className="w-3.5 h-3.5" aria-hidden /> Started
                 </span>
-                <span className="text-xs tabular-nums">{fmtDate(entry.streak_start)}</span>
+                <span className="text-xs tabular-nums text-foreground/85 font-semibold">
+                  {fmtDate(entry.streak_start)}
+                </span>
               </div>
             )}
           </div>
