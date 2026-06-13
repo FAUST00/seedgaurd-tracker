@@ -2,24 +2,40 @@
 
 /**
  * Account page — login/signup form + profile management.
- * Deletion is handled in Settings → Danger Zone (link provided here too).
- * Hero art: hero-city.jpg placed in the header banner on the logged-in view.
+ *
+ * Fixes applied:
+ *  - Verification step: after signup shows "check your email" screen
+ *  - Auth state listener: reacts to SIGNED_IN / SIGNED_OUT events
+ *  - Logout clears user-specific localStorage so dashboard resets to 0
+ *  - Sound effects on login success / error
  */
 
 import { useState, useEffect } from 'react';
-import { User, LogOut, Copy, Check, Shield, ExternalLink } from 'lucide-react';
+import { User, LogOut, Copy, Check, Shield, ExternalLink, Mail } from 'lucide-react';
 import { signIn, signUp, signOut, getUser, getProfile, migrateLocalToCloud } from '@/lib/sync';
 import { syncProfileStreak } from '@/lib/social';
+import { supabase } from '@/lib/supabase';
+import { playSound, unlockAudio } from '@/lib/sound';
 import { useToast } from '@/components/toast';
 import { ImageBanner } from '@/components/synth-background';
 import { ART } from '@/lib/assets';
 import { useRouter } from 'next/navigation';
 
+/** User-specific localStorage keys — cleared on logout so the dashboard resets. */
+const USER_LS_KEYS = [
+  'seedguard_streak_start',
+  'seedguard_stats',
+  'seedguard_first_day',
+  'seedguard_history',
+  'seedguard_profile',
+  'seedguard_account',
+];
+
 export default function AccountPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const [step, setStep] = useState<'loading' | 'auth' | 'profile'>('loading');
+  const [step, setStep] = useState<'loading' | 'auth' | 'verification' | 'profile'>('loading');
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,6 +46,7 @@ export default function AccountPage() {
   const [migrating, setMigrating] = useState(false);
   const [migrateResults, setMigrateResults] = useState<string[]>([]);
 
+  // ── Initial auth check ─────────────────────────────────────────────────────
   useEffect(() => {
     async function init() {
       const user = await getUser();
@@ -45,13 +62,34 @@ export default function AccountPage() {
     init();
   }, []);
 
+  // ── Auth state listener — reacts to Supabase token lifecycle events ─────────
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Covers: email confirmation callback, token refresh
+          const p = await getProfile();
+          setProfile(p ?? { username: session.user.email, id: session.user.id });
+          await syncProfileStreak();
+          setStep('profile');
+        } else if (event === 'SIGNED_OUT') {
+          setProfile(null);
+          setStep('auth');
+        }
+      },
+    );
+    return () => subscription.unsubscribe();
+  }, []);
+
   async function handleAuth(e: React.FormEvent) {
     e.preventDefault();
+    unlockAudio(); // prime AudioContext inside a user gesture (iOS/Safari requirement)
     setLoading(true);
     try {
       if (mode === 'signup') {
         await signUp(email, password, username);
-        toast('Account created! Check your email to confirm, then log in.', 'success');
+        // Show dedicated verification-pending screen instead of leaving on auth form
+        setStep('verification');
       } else {
         await signIn(email, password);
         const user = await getUser();
@@ -59,9 +97,11 @@ export default function AccountPage() {
         setProfile(p ?? { username: user?.email, id: user?.id });
         await syncProfileStreak();
         setStep('profile');
+        playSound('success');
         toast('Logged in successfully.', 'success');
       }
     } catch (err: unknown) {
+      playSound('error');
       toast((err as Error).message ?? 'Something went wrong.', 'error');
     } finally {
       setLoading(false);
@@ -69,6 +109,8 @@ export default function AccountPage() {
   }
 
   async function handleLogout() {
+    // Clear user-specific local data so the dashboard timer resets to 0
+    USER_LS_KEYS.forEach((k) => localStorage.removeItem(k));
     await signOut();
     setProfile(null);
     setStep('auth');
@@ -108,6 +150,7 @@ export default function AccountPage() {
     navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+    playSound('click');
     toast('Friend code copied to clipboard!', 'success');
   }
 
@@ -120,12 +163,44 @@ export default function AccountPage() {
     );
   }
 
+  // ── Verification pending ───────────────────────────────────────────────────
+  if (step === 'verification') {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-6 page-entry text-center">
+          <Shield
+            className="w-14 h-14 mx-auto text-primary drop-shadow-[0_0_14px_hsl(var(--primary)/0.8)]"
+            aria-hidden
+          />
+          <h1 className="text-4xl font-display font-extrabold neon-text-pink text-primary tracking-widest uppercase italic">
+            SeedGuard
+          </h1>
+          <div className="rounded-2xl border border-secondary/30 glass-effect p-8 space-y-5 animate-scale-in neon-box-cyan">
+            <Mail className="w-12 h-12 mx-auto text-secondary neon-text-cyan" aria-hidden />
+            <p className="text-xl font-bold text-secondary neon-text-cyan">Check Your Email</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              We sent a confirmation link to{' '}
+              <span className="font-bold text-foreground">{email}</span>.
+              Click the link to verify your account, then log in here.
+            </p>
+            <button
+              onClick={() => { setStep('auth'); setMode('login'); }}
+              className="w-full bg-primary/25 hover:bg-primary/35 border border-primary/50 text-primary font-extrabold py-3 rounded-xl uppercase tracking-widest transition-all neon-box-pink text-sm"
+            >
+              Back to Log In
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ── Profile view ───────────────────────────────────────────────────────────
   if (step === 'profile' && profile) {
     const displayName = (profile.username as string | null) ?? 'Anonymous';
     return (
       <div className="container mx-auto p-4 md:p-8 max-w-2xl space-y-8 page-entry">
-        {/* Banner — hero-city.jpg used as the account header */}
+        {/* Banner */}
         <ImageBanner src={ART.heroCity}>
           <div className="p-6 md:p-8 flex items-center gap-5">
             <div className="w-16 h-16 rounded-full bg-primary/20 border-2 border-primary/50 flex items-center justify-center flex-shrink-0">
@@ -190,7 +265,6 @@ export default function AccountPage() {
           )}
         </div>
 
-        {/* Link to danger zone */}
         <p className="text-sm text-muted-foreground text-center">
           To permanently delete your account, go to{' '}
           <a href="/settings" className="text-destructive hover:underline font-semibold">
@@ -230,7 +304,9 @@ export default function AccountPage() {
                 aria-selected={mode === m}
                 onClick={() => setMode(m)}
                 className={`flex-1 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider transition-all
-                  ${mode === m ? 'bg-primary/30 text-primary border border-primary/40 neon-text-pink' : 'text-muted-foreground hover:text-foreground'}`}
+                  ${mode === m
+                    ? 'bg-primary/30 text-primary border border-primary/40 neon-text-pink'
+                    : 'text-muted-foreground hover:text-foreground'}`}
               >
                 {m === 'login' ? 'Log In' : 'Sign Up'}
               </button>
