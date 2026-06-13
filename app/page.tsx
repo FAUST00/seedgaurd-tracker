@@ -10,13 +10,20 @@ import { ART } from '@/lib/assets';
 export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center p-4 text-foreground page-entry overflow-hidden">
-      {/* User-provided hero art — hero-city.jpg */}
-      {/* CSS gradient fallback always present; image layered on top */}
+      {/* Hero city background — zoomed to 200% so the top (sun) is pushed above the viewport */}
       <div
-        className="absolute inset-0 bg-cover bg-bottom opacity-65 pointer-events-none"
-        style={{ backgroundImage: `url(${ART.heroCity})` }}
+        className="absolute inset-0 opacity-65 pointer-events-none"
+        style={{
+          backgroundImage: `url(${ART.heroCity})`,
+          backgroundSize: '200%',
+          backgroundPosition: 'bottom center',
+          backgroundRepeat: 'no-repeat',
+        }}
         aria-hidden
       />
+      {/* Top-fade: masks any residual sun glow at the top edge */}
+      <div className="absolute inset-x-0 top-0 h-[40%] bg-gradient-to-b from-background to-transparent pointer-events-none" aria-hidden />
+      {/* Bottom-fade: keeps content readable */}
       <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/30 to-transparent pointer-events-none" aria-hidden />
 
       {/* Content */}
