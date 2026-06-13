@@ -13,11 +13,11 @@ export default function Home() {
       {/* User-provided hero art — hero-city.jpg */}
       {/* CSS gradient fallback always present; image layered on top */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none"
+        className="absolute inset-0 bg-cover bg-center opacity-65 pointer-events-none"
         style={{ backgroundImage: `url(${ART.heroCity})` }}
         aria-hidden
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20 pointer-events-none" aria-hidden />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/30 to-transparent pointer-events-none" aria-hidden />
 
       {/* Content */}
       <div className="relative w-full max-w-sm space-y-8 flex flex-col items-center text-center">
