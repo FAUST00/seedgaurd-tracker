@@ -132,6 +132,7 @@ export default function Dashboard() {
       } catch {}
       const user = await getUser();
       setHasAccount(!!(user || (typeof window !== 'undefined' && localStorage.getItem('seedguard_account'))));
+
       const start = await resolveStreakStart();
       setStreakDisplayDate(start.toLocaleDateString());
       setLoading(false);
@@ -220,7 +221,7 @@ export default function Dashboard() {
           <span style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#e87f9f' }}>Started: {streakDisplayDate}</span>
           <button
             onClick={() => {
-              setShowStreakEdit(v => !�);
+              setShowStreakEdit(v => !v);
               const s = localStorage.getItem('seedguard_streak_start');
               setEditDateInput(s ? new Date(s).toISOString().slice(0, 10) : '');
             }}
@@ -248,7 +249,7 @@ export default function Dashboard() {
             { value: pad(timer.seconds), label: 'Seconds' },
           ].map(({ value, label }) => (
             <div key={label} className="flex flex-col items-center gap-2">
-              <div className="w-{ull rounded-xl border border-primary/25 bg-background/80 py-4 px-2 flex items-center justify-center">
+              <div className="w-full rounded-xl border border-primary/25 bg-background/80 py-4 px-2 flex items-center justify-center">
                 <span className="text-3xl sm:text-4xl font-extrabold font-mono text-primary neon-text-pink tabular-nums leading-none">{value}</span>
               </div>
               <span className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-widest font-semibold">{label}</span>
@@ -293,7 +294,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Link href="/history" className="rounded-xl border border-primary/20 bg-background/50 backdrop-blur-sm p-8 text-center hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 group animate-scale-in [animation-delay:200ms]">
           <div className="inline-flex items-center justify-center w-14 h-14 mb-4 group-hover:scale-110 transition-transform">
-            <Flame className="w7 h-7 text-primary drop-shadow-[0_0_8px_rgba(255,0,255,0.6)]" />
+            <Flame className="w-7 h-7 text-primary drop-shadow-[0_0_8px_rgba(255,0,255,0.6)]" />
           </div>
           <h3 className="font-bold text-lg mb-2 uppercase tracking-wider">Log Entry</h3>
           <p className="text-sm text-muted-foreground">Record a victory or log a relapse to keep your streak accurate.</p>
@@ -310,7 +311,7 @@ export default function Dashboard() {
       {/* ── Motivational Quote ──────────────────────────────────────────────────── */}
       <div className="rounded-xl border border-secondary/30 bg-background/50 backdrop-blur-sm p-6 md:p-8 animate-scale-in [animation-delay:300ms] neon-box-cyan">
         <div className="flex items-center gap-2 mb-4">
-          <Quote className="w4 h-4 text-secondary/70" aria-hidden />
+          <Quote className="w-4 h-4 text-secondary/70" aria-hidden />
           <p className="text-xs text-secondary/70 uppercase tracking-widest font-bold">Daily Wisdom</p>
           <span className="ml-auto text-xs text-muted-foreground/50 tabular-nums">{currentQuoteIdx + 1} / {QUOTES.length}</span>
         </div>
