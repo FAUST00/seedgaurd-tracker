@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Flame, TrendingUp, Award, Calendar, Clock, Users } from 'lucide-react';
+import { Flame, TrendingUp, Award, Calendar, Clock, Users, ChevronRight, Quote } from 'lucide-react';
 import { syncWithCloud, getStreakFromCloud, getUser } from '@/lib/sync';
 
 interface DashboardStats {
@@ -23,19 +23,45 @@ function pad(n: number): string {
   return String(n).padStart(2, '0');
 }
 
+// ── 25 motivational quotes (PMO recovery · Stoic · Discipline) ──────────────
+const QUOTES = [
+  { text: 'You have power over your mind, not outside events. Realize this, and you will find strength.', author: 'Marcus Aurelius' },
+  { text: 'The first and greatest victory is to conquer yourself.', author: 'Plato' },
+  { text: 'Discipline is the bridge between goals and accomplishment.', author: 'Jim Rohn' },
+  { text: 'We suffer more in imagination than in reality.', author: 'Seneca' },
+  { text: 'He who conquers himself is the mightiest warrior.', author: 'Confucius' },
+  { text: 'Difficulties strengthen the mind, as labor does the body.', author: 'Seneca' },
+  { text: 'What we do in life echoes in eternity.', author: 'Marcus Aurelius' },
+  { text: 'The successful warrior is the average man with laser-like focus.', author: 'Bruce Lee' },
+  { text: 'We become what we repeatedly do. Excellence, then, is not an act, but a habit.', author: 'Aristotle' },
+  { text: 'It does not matter how slowly you go as long as you do not stop.', author: 'Confucius' },
+  { text: 'If it is not right, do not do it; if it is not true, do not say it.', author: 'Marcus Aurelius' },
+  { text: 'Self-control is the chief element in self-respect, and self-respect is the chief element in courage.', author: 'Thucydides' },
+  { text: 'The cave you fear to enter holds the treasure you seek.', author: 'Joseph Campbell' },
+  { text: 'Real freedom is not freedom from responsibility — it is the freedom that comes from mastering yourself.', author: '' },
+  { text: 'Waste no more time arguing what a good man should be. Be one.', author: 'Marcus Aurelius' },
+  { text: 'The more you sweat in training, the less you bleed in battle.', author: 'Sun Tzu' },
+  { text: 'One day or day one. You decide.', author: '' },
+  { text: 'Every battle is won before it is ever fought.', author: 'Sun Tzu' },
+  { text: 'You will continue to suffer if you have an emotional reaction to everything that is said to you. True power is sitting back and observing with logic.', author: 'Bruce Lee' },
+  { text: 'Conquer the angry one by not getting angry; conquer the wicked by goodness; conquer the miser by generosity; conquer the liar by truth.', author: 'Buddha' },
+  { text: 'Between stimulus and response there is a space. In that space is our power to choose our response.', author: 'Viktor Frankl' },
+  { text: 'The impediment to action advances action. What stands in the way becomes the way.', author: 'Marcus Aurelius' },
+  { text: 'Strength does not come from physical capacity. It comes from an indomitable will.', author: 'Mahatma Gandhi' },
+  { text: 'Make the most of yourself, for that is all there is of you.', author: 'Ralph Waldo Emerson' },
+  { text: 'Your future self is watching you right now through your memories. Make him proud.', author: '' },
+] as const;
+
 async function resolveStreakStart(): Promise<Date> {
   try {
-    // 1. Cloud first
     const cloudStart = await getStreakFromCloud();
     if (cloudStart) {
       if (typeof window !== 'undefined') localStorage.setItem('seedguard_streak_start', cloudStart);
       return new Date(cloudStart);
     }
-    // 2. localStorage fallback
     const local = typeof window !== 'undefined' ? localStorage.getItem('seedguard_streak_start') : null;
     if (local) return new Date(local);
 
-    // 3. Legacy relapse log
     const relapses = JSON.parse(typeof window !== 'undefined' ? localStorage.getItem('seedguard_relapses') || '[]' : '[]');
     if (relapses.length > 0) {
       const latest = [...relapses].sort((a: any, b: any) =>
@@ -76,6 +102,21 @@ export default function Dashboard() {
   const [showStreakEdit, setShowStreakEdit] = useState(false);
   const [editDateInput, setEditDateInput] = useState('');
   const [streakDisplayDate, setStreakDisplayDate] = useState('');
+
+  // ── Quote state — hourly base + manual offset ──────────────────────────────
+  const [quoteOffset, setQuoteOffset] = useState(0);
+  const hourlyBase = Math.floor(Date.now() / 3_600_000) % QUOTES.length;
+  const currentQuoteIdx = (hourlyBase + quoteOffset) % QUOTES.length;
+  const currentQuote = QUOTES[currentQuoteIdx];
+
+  // Auto-advance quote every hour
+  useEffect(() => {
+    const id = setInterval(() => {
+      // Force re-render so hourlyBase recomputes; offset stays
+      setQuoteOffset(o => o); // triggers re-render
+    }, 3_600_000);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     async function init() {
@@ -122,7 +163,7 @@ export default function Dashboard() {
       return updated;
     });
     syncWithCloud();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timer.days, loading]);
 
   const handleSaveStreak = async () => {
@@ -193,7 +234,7 @@ export default function Dashboard() {
               </div>
               <span className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-widest font-semibold">{label}</span>
             </div>
-          ))}
+           ))}
         </div>
       </div>
 
@@ -247,7 +288,33 @@ export default function Dashboard() {
         </Link>
       </div>
 
-      <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-secondary/5 backdrop-blur-sm p-8 text-center animate-scale-in [animation-delay:300ms]">
+      {/* ** motivational quote **/}
+      <div className="rounded-xl border border-secondary/30 bg-background/50 backdrop-blur-sm p-6 md:p-8 animate-scale-in [animation-delay:300ms] neon-box-cyan">
+        <div className="flex items-center gap-2 mb-4">
+          <Quote className="w-4 h-4 text-secondary/70" aria-hidden />
+          <p className="text-xs text-secondary/70 uppercase tracking-widest font-bold">Daily Wisdom</p>
+          <span className="ml-auto text-xs text-muted-foreground/50 tabular-nums">{currentQuoteIdx + 1} / {QUOTES.length}</span>
+        </div>
+
+        <blockquote className="text-base md:text-lg text-foreground leading-relaxed italic mb-3 min-h-[4rem]">
+          &ldquo;{currentQuote.text}&rdquo;
+        </blockquote>
+
+        {currentQuote.author ? (
+          <p className="text-sm text-secondary font-semibold neon-text-cyan">— {currentQuote.author}</p>
+        ) : null}
+
+        <button
+          onClick={() => setQuoteOffset(o => (o + 1) % QUOTES.length)}
+          className="mt-5 inline-flex items-center gap-1.5 text-xs text-secondary/70 hover:text-secondary font-bold uppercase tracking-wider transition-colors"
+          aria-label="Next quote"
+        >
+          Next Quote <ChevronRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* Inspirational footer */}
+      <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-secondary/5 backdrop-blur-sm p-8 text-center animate-scale-in [animation-delay:350ms]">
         <p className="text-lg text-foreground leading-relaxed">
           Every second <span className="font-bold text-primary neon-text-pink">you hold</span> is a victory.
           <span className="block mt-4 text-muted-foreground text-base">This is your space to build the discipline and freedom you deserve.</span>
