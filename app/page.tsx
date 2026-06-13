@@ -19,12 +19,12 @@ export default function Home() {
         aria-hidden
       />
       {/* Bottom-fade: keeps content readable */}
-      <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/30 to-transparent pointer-events-none" aria-hidden />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent pointer-events-none" aria-hidden />
 
-      {/* Content */}
-      <div className="relative w-full max-w-sm space-y-8 flex flex-col items-center text-center">
+      {/* Content — glass card gives contrast against the city image */}
+      <div className="relative w-full max-w-sm space-y-6 flex flex-col items-center text-center bg-background/55 backdrop-blur-md rounded-2xl border border-primary/20 p-8 shadow-2xl">
         {/* Shield logo */}
-        <div className="rounded-full bg-primary/10 p-5 neon-box-pink animate-scale-in">
+        <div className="rounded-full bg-primary/20 p-5 neon-box-pink animate-scale-in">
           <Shield className="h-14 w-14 text-primary drop-shadow-[0_0_12px_hsl(var(--primary)/0.8)]" aria-hidden />
         </div>
 
@@ -32,14 +32,15 @@ export default function Home() {
           SeedGuard
         </h1>
 
-        <p className="text-muted-foreground pb-4 text-lg leading-relaxed">
+        <p className="text-foreground/90 pb-2 text-lg leading-relaxed font-medium">
           Your private tracker to reclaim your freedom and build discipline.
-          <span className="block mt-2 text-sm text-secondary/70">Sync across all your devices with a free account.</span>
+          <span className="block mt-2 text-sm text-secondary/80">Sync across all your devices with a free account.</span>
         </p>
 
+        {/* Primary CTA — bold and unmissable */}
         <Link
           href="/dashboard"
-          className="group inline-flex items-center justify-center gap-2 w-full h-14 px-6 text-xl font-extrabold bg-primary/20 text-primary rounded-xl border border-primary/40 hover:bg-primary/30 hover:scale-105 active:scale-95 transition-all neon-box-pink uppercase tracking-widest shadow-lg"
+          className="group inline-flex items-center justify-center gap-2 w-full h-14 px-6 text-xl font-extrabold bg-primary/55 text-white rounded-xl border-2 border-primary/85 hover:bg-primary/70 hover:scale-105 active:scale-95 transition-all neon-box-pink uppercase tracking-widest shadow-xl shadow-primary/30"
         >
           Start Tracking Now
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" aria-hidden />
@@ -48,34 +49,34 @@ export default function Home() {
         <div className="flex gap-4 w-full">
           <Link
             href="/account"
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-secondary/30 text-secondary text-sm font-bold hover:bg-secondary/10 transition-all"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-secondary/65 bg-secondary/25 text-secondary text-sm font-bold hover:bg-secondary/40 transition-all"
           >
             Sign In / Sign Up
           </Link>
           <Link
             href="/benefits"
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-muted/40 text-muted-foreground text-sm hover:bg-muted/20 transition-all"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-white/35 bg-white/15 text-white text-sm font-semibold hover:bg-white/25 transition-all"
           >
             Journey
           </Link>
         </div>
 
         {/* Feature grid */}
-        <div className="w-full mt-4 pt-6 border-t border-primary/10 space-y-3">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider">Features</p>
+        <div className="w-full pt-4 border-t border-primary/20 space-y-3">
+          <p className="text-xs text-secondary/80 uppercase tracking-wider font-bold">Features</p>
           <div className="grid grid-cols-2 gap-3 text-xs">
             {[
-              { icon: '📊', label: 'Streak Tracking', sub: 'Build daily momentum', accent: 'primary' },
-              { icon: '☁️', label: 'Cloud Sync',      sub: 'Any device, always', accent: 'secondary' },
-              { icon: '🏆', label: 'Leaderboards',    sub: 'Friends + Global', accent: 'gold' },
-              { icon: '💬', label: 'Direct Messages', sub: 'Chat with friends', accent: 'accent' },
+              { icon: '📊', label: 'Streak Tracking', sub: 'Build daily momentum' },
+              { icon: '☁️', label: 'Cloud Sync',      sub: 'Any device, always' },
+              { icon: '🏆', label: 'Leaderboards',    sub: 'Friends + Global' },
+              { icon: '💬', label: 'Direct Messages', sub: 'Chat with friends' },
             ].map(({ icon, label, sub }) => (
               <div
                 key={label}
-                className="rounded-xl glass-effect p-3 border border-muted/20 hover:border-primary/30 transition-colors text-left"
+                className="rounded-xl bg-background/60 p-3 border border-primary/25 hover:border-primary/50 transition-colors text-left"
               >
-                <div className="font-bold mb-0.5 text-foreground">{icon} {label}</div>
-                <div className="text-muted-foreground">{sub}</div>
+                <div className="font-bold mb-0.5 text-white">{icon} {label}</div>
+                <div className="text-foreground/70">{sub}</div>
               </div>
             ))}
           </div>
@@ -84,7 +85,7 @@ export default function Home() {
         {/* Leaderboard teaser */}
         <Link
           href="/streaks"
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-gold/30 text-gold bg-gold/5 hover:bg-gold/15 text-sm font-bold transition-all neon-hover"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-gold/65 text-gold bg-gold/20 hover:bg-gold/35 text-sm font-bold transition-all shadow-lg shadow-gold/20"
         >
           <Trophy className="w-4 h-4" aria-hidden />
           View Streak Leaderboard
