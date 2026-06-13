@@ -3,8 +3,8 @@
 /**
  * ProfileCard — mini hover card shown on leaderboard / friends rows.
  *
- * Fix applied: increased card opacity (bg-background/90), bolder border,
- * foreground text for stat labels and values for full readability.
+ * Fix applied: replaced bg-background/90 (broken with CSS-var opacity) with
+ * an inline style using a hardcoded RGBA value for full opacity control.
  */
 
 import { useEffect, useRef, useState } from 'react';
@@ -68,11 +68,15 @@ export function ProfileCard({ entry, children }: Props) {
           ref={cardRef}
           role="dialog"
           aria-label={`${entry.username}'s profile`}
+          style={{
+            background: 'rgba(8, 3, 18, 0.96)',
+            border: '1px solid rgba(168, 85, 247, 0.65)',
+            boxShadow: '0 0 24px rgba(168, 85, 247, 0.18)',
+          }}
           className={`
             absolute top-0 z-50 w-60
             ${pos === 'right' ? 'left-full ml-3' : 'right-full mr-3'}
-            bg-background/90 backdrop-blur-md border border-primary/60
-            rounded-2xl p-5 shadow-2xl shadow-primary/20 animate-scale-in
+            backdrop-blur-md rounded-2xl p-5 animate-scale-in
           `}
         >
           {/* Avatar */}
